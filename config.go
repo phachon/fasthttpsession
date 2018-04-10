@@ -1,72 +1,80 @@
 package fasthttpsession
 
-import "github.com/satori/go.uuid"
+import (
+	"github.com/satori/go.uuid"
+	"time"
+)
+
+// new default config
+func NewDefaultConfig() *Config {
+	config := &Config{
+		CookieName: "fasthttpsessionid",
+		Domain: "",
+		Expires: time.Hour * 2,
+		GCLifetime: 300,
+		Secure: true,
+		SessionIdInURLQuery: false,
+		SessionNameInUrlQuery: "",
+		SessionIdInHttpHeader: false,
+		SessionNameInHttpHeader: "",
+	}
+
+	// default sessionIdGeneratorFunc
+	config.SessionIdGeneratorFunc = config.defaultSessionIdGenerator
+
+	return config
+}
 
 type Config struct {
 
 	// cookie name
 	CookieName string
 
-	// cookie lifetime
-	Lifetime int
-
-	// is secure
-	IsSecure bool
-
-	// cookie expires time
-	CookieExpires int
-
-	// Domain
+	// cookie domain
 	Domain string
 
-	// sessionId is in url query
-	SIdIsInURLQuery bool
+	// If you want to delete the cookie when the browser closes, set it to -1.
+	//
+	//  0 means no expire, (24 years)
+	// -1 means when browser closes
+	// >0 is the time.Duration which the session cookies should expire.
+	Expires time.Duration
 
-	// SessionId in url query name
-	SIdInUrlQueryName string
+	// session max life time
+	GCLifetime int64
+
+	// set whether to pass this bar cookie only through HTTPS
+	Secure bool
+
+	// sessionId is in url query
+	SessionIdInURLQuery bool
+
+	// sessionName in url query
+	SessionNameInUrlQuery string
 
 	// sessionId is in http header
-	SIdIsInHttpHeader bool
+	SessionIdInHttpHeader bool
 
-	// sessionId in http header name
-	SIdInHttpHeaderName string
+	// sessionName in http header
+	SessionNameInHttpHeader string
 
-	// encrypt session data
-	Encrypted bool
-
-	// SessionIDGenerator should returns a random session id.
-	// By default we will use a uuid impl package to generate
-	// that, but developers can change that with simple assignment.
-	SessionIdGeneratorFunc func() string
+	// SessionIdGeneratorFunc should returns a random session id.
+	SessionIdGeneratorFunc func() (string, error)
 
 	// Encode the cookie value if not nil.
-	// Should accept as first argument the cookie name (config.Name)
-	//         as second argument the server's generated session id.
-	// Should return the new session id, if error the session id setted to empty which is invalid.
-	//
-	// Note: Errors are not printed, so you have to know what you're doing,
-	// and remember: if you use AES it only supports key sizes of 16, 24 or 32 bytes.
-	// You either need to provide exactly that amount or you derive the key from what you type in.
-	//
-	// Defaults to nil
-	EncodeFunc func(cookieName string, value interface{}) (string, error)
+	EncodeFunc func(cookieValue string) (string, error)
 
 	// Decode the cookie value if not nil.
-	// Should accept as first argument the cookie name (config.Name)
-	//               as second second accepts the client's cookie value (the encoded session id).
-	// Should return an error if decode operation failed.
-	//
-	// Note: Errors are not printed, so you have to know what you're doing,
-	// and remember: if you use AES it only supports key sizes of 16, 24 or 32 bytes.
-	// You either need to provide exactly that amount or you derive the key from what you type in.
-	//
-	// Defaults to nil
-	DecodeFunc func(cookieName string, cookieValue string, v interface{}) error
+	DecodeFunc func(cookieValue string) (string, error)
 
 }
 
+type ProviderConfig interface {
+	Name() string
+}
+
 // sessionId generator
-func (c *Config) SessionIdGenerator() string {
+func (c *Config) SessionIdGenerator() (string, error) {
 	sessionIdGenerator := c.SessionIdGeneratorFunc
 	if sessionIdGenerator == nil {
 		return c.defaultSessionIdGenerator()
@@ -76,44 +84,38 @@ func (c *Config) SessionIdGenerator() string {
 }
 
 // default sessionId generator => uuid
-func (c *Config) defaultSessionIdGenerator() string {
-	id, _ := uuid.NewV4()
-	return id.String()
+func (c *Config) defaultSessionIdGenerator() (string, error) {
+	id, err := uuid.NewV4()
+	return id.String(), err
 }
 
 // encode cookie value
-func (c *Config) Encode(cookieValue string) string {
+func (c *Config) Encode(cookieValue string) (string, error) {
 	encode := c.EncodeFunc;
 	if encode != nil {
-		newVal, err := encode(c.CookieName, cookieValue)
+		newVal, err := encode(cookieValue)
 		if err == nil {
 			cookieValue = newVal
 		} else {
 			cookieValue = ""
 		}
 	}
-	return cookieValue
+	return cookieValue, nil
 }
 
 // decode cookie value
-func (c *Config) Decode(cookieValue string) string {
+func (c *Config) Decode(cookieValue string) (string, error) {
 	if cookieValue == "" {
-		return ""
+		return "", nil
 	}
-	var cookieValueDecoded *string
 	decode := c.DecodeFunc;
 	if decode != nil {
-		err := decode(c.CookieName, cookieValue, &cookieValueDecoded)
+		newVal, err := decode(cookieValue)
 		if err == nil {
-			cookieValue = *cookieValueDecoded
+			cookieValue = newVal
 		} else {
 			cookieValue = ""
 		}
 	}
-	return cookieValue
-}
-
-
-type AdapterConfig struct {
-
+	return cookieValue, nil
 }

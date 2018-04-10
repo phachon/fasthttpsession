@@ -1,168 +1,142 @@
 package fasthttpsession
 
 import (
-	"fmt"
-	"os"
 	"github.com/valyala/fasthttp"
-	"time"
+	"errors"
 )
 
-type SessionAdapter interface {
-	Init(*AdapterConfig) error
-	Release(*fasthttp.RequestCtx) error
-	SessionIdIsExit(string) bool
-	GetSessionStore(string) SessionStore
-}
-
-type SessionStore interface {
-	Get() string
-	Set() error
-	GetOnce() error
-	Bind() error
-	Destroy()
-}
-
-var adapters = make(map[string]SessionAdapter)
-
-// register session adapter
-func Register(adapterName string, adapter SessionAdapter)  {
-	if adapters[adapterName] != nil {
-		panic("session: session adapter "+ adapterName +" already registered!")
-	}
-	if adapter == nil {
-		panic("session: session adapter "+ adapterName +" is nil!")
-	}
-
-	adapters[adapterName] = adapter
-}
-
-// Session
+// Session struct
 type Session struct {
-	Adapter SessionAdapter
-	Config *Config
+	provider Provider
+	config *Config
 }
 
-// return new Session, default adapter file
-func NewSession(config *Config) *Session {
-	session := &Session{
-		Config: config,
+var providers = make(map[string]Provider)
+
+// register session provider
+func Register(providerName string, provider Provider)  {
+	if providers[providerName] != nil {
+		panic("session: session provider "+ providerName +" already registered!")
+	}
+	if provider == nil {
+		panic("session: session provider "+ providerName +" is nil!")
 	}
 
-	// default adapter file
-	session.SetAdapter("file", &AdapterConfig{})
+	providers[providerName] = provider
+}
+
+
+// return new Session, default provider file
+func NewSession(cfg *Config) *Session {
+	session := &Session{
+		config: cfg,
+	}
 
 	return session
 }
 
-// set session adapter and adapter config
-func (s *Session) SetAdapter(adapterName string, adapterConfig *AdapterConfig) error {
-	adapter, ok := adapters[adapterName]
+// set session provider and provider config
+func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig) error {
+	provider, ok := providers[providerName]
 	if !ok {
-		printError("session: session adapter "+adapterName+" not found!")
+		return errors.New("session: session provider "+providerName+" not found!")
 	}
 
-	err := adapter.Init(adapterConfig)
+	err := provider.Init(providerConfig)
 	if err != nil {
 		return err
 	}
 
-	s.Adapter = adapter
+	s.provider = provider
 	return nil
 }
 
 // session start
-// return session store
-func (s *Session) Start(ctx *fasthttp.RequestCtx) SessionStore {
+// return session provider
+func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, err error) {
 
-	sId := s.GetSessionId(ctx)
-
-	// if sessionId is not empty, check is exit in session adapter
-	if sId != "" && s.Adapter.SessionIdIsExit(sId) {
-		return s.Adapter.GetSessionStore(sId)
+	sessionId, err := s.GetSessionId(ctx)
+	if err != nil {
+		return
+	}
+	// if sessionId is not empty, check is exit in session provider
+	if sessionId != "" && s.provider.SessionIdIsExist(sessionId) {
+		return s.provider.ReadStore(sessionId)
 	}
 	// new session id
-	sId = s.Config.SessionIdGeneratorFunc()
-	if sId == "" {
-		printError("sessionId generator is empty")
+	sessionId, err = s.config.SessionIdGenerator()
+	if err != nil{
+		return
 	}
-
-	// add cookie
-	cookie := fasthttp.AcquireCookie()
-	cookie.SetKey(s.Config.CookieName)
-	cookie.SetValue(sId)
-	cookie.SetPath("/")
-	cookie.SetHTTPOnly(true)
-	cookie.SetDomain(s.Config.Domain)
-	// MaxAge=0 means no 'Max-Age' attribute specified.
-	// MaxAge<0 means delete cookie now, equivalently 'Max-Age: 0'
-	// MaxAge>0 means Max-Age attribute present and given in seconds
-	if s.Config.CookieExpires >= 0 {
-		if s.Config.CookieExpires == 0 {
-			// = 0 unlimited life
-			cookie.SetExpire(fasthttp.CookieExpireUnlimited)
-		} else {
-			// > 0
-			cookie.SetExpire(time.Now().Add(s.Config.CookieExpires))
-		}
+	if sessionId == "" {
+		return sessionStore, errors.New("generator sessionId  is empty")
 	}
-
-	if ctx.IsTLS() && s.Config.IsSecure {
-		cookie.SetSecure(true)
+	sessionStore, err = s.provider.ReadStore(sessionId)
+	if err != nil {
+		return
 	}
 
 	// encode cookie value
-	cookie.SetValue(s.Config.Encode(string(cookie.Value())))
-	ctx.Response.Header.SetCookie(cookie)
-
-	return sId
+	encodeCookieValue, err := s.config.Encode(sessionId)
+	if err != nil {
+		return
+	}
+	// set cookie
+	NewCookie().Set(ctx,
+		s.config.CookieName,
+		encodeCookieValue,
+		s.config.Domain,
+		s.config.Expires,
+		s.config.Secure)
+	return
 }
 
-func (s *Session) Release(ctx *fasthttp.RequestCtx) {
-
-}
-
-// get fasthttp session id
+// get session id
 // 1. get session id by reading from cookie
-// 2. if not exist, get session id from query or http headers
-func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) (string) {
+// 2. get session id from query or http headers
+// 3. get session id from http headers
+func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) (string, error) {
 
-	cookieByte := ctx.Request.Header.Cookie(s.Config.CookieName)
+	cookieByte := ctx.Request.Header.Cookie(s.config.CookieName)
 	if len(cookieByte) > 0 {
-		return (string(cookieByte))
+		return s.config.Decode(string(cookieByte))
 	}
 
-	if s.Config.SIdIsInURLQuery {
-		cookieFormValue := ctx.FormValue(s.Config.SIdInUrlQueryName)
+	if s.config.SessionIdInURLQuery {
+		cookieFormValue := ctx.FormValue(s.config.SessionNameInUrlQuery)
 		if len(cookieFormValue) > 0 {
-			return string(cookieFormValue)
+			return s.config.Decode(string(cookieFormValue))
 		}
 	}
 
-	if s.Config.SIdIsInHttpHeader {
-		cookieHeader := ctx.Request.Header.Peek(s.Config.SIdInHttpHeaderName)
+	if s.config.SessionIdInHttpHeader {
+		cookieHeader := ctx.Request.Header.Peek(s.config.SessionNameInHttpHeader)
 		if len(cookieHeader) > 0 {
-			return string(cookieHeader)
+			return s.config.Decode(string(cookieHeader))
 		}
 	}
 
-	return ""
+	return "", nil
 }
 
-// Set cookie with https.
-func (s *Session) isSecure(ctx *fasthttp.RequestCtx) bool {
-	if !s.Config.IsSecure {
-		return false
-	}
-	if string(ctx.Request.URI().Scheme()) != "" {
-		return string(ctx.Request.URI().Scheme()) == "https"
-	}
-	if !ctx.IsTLS() {
-		return false
-	}
-	return true
-}
+// destroy session by its id in fasthttp request
+func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 
-func printError(msg string)  {
-	fmt.Println(msg)
-	os.Exit(100)
+	// delete header if sessionId in http Header
+	if s.config.SessionIdInHttpHeader {
+		ctx.Request.Header.Del(s.config.SessionNameInHttpHeader)
+		ctx.Response.Header.Del(s.config.SessionNameInHttpHeader)
+	}
+
+	cookieValue := string(ctx.Request.Header.Cookie(s.config.CookieName))
+	if cookieValue == "" {
+		return
+	}
+
+	//sessionId, _ := url.QueryUnescape(string(cookieByte))
+	sessionId, _ := s.config.Decode(cookieValue)
+	s.provider.Destroy(sessionId)
+
+	// delete cookie by cookieName
+	NewCookie().Delete(ctx, s.config.CookieName)
 }
