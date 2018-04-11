@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 	"sync"
 	"time"
 	"errors"
