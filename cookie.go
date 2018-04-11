@@ -16,7 +16,7 @@ type Cookie struct  {
 // get cookie by name
 func (c *Cookie) Get(ctx *fasthttp.RequestCtx, name string) (value string) {
 	cookieByte := ctx.Request.Header.Cookie(name)
-	if cookieByte != nil {
+	if len(cookieByte) > 0 {
 		value = string(cookieByte)
 	}
 	return

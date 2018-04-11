@@ -68,11 +68,37 @@ func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 	}
 	mp.lock.RUnlock()
 
+	memStore = NewMemoryStore()
 	mp.lock.Lock()
-	mp.values[sessionId] = NewMemoryStore()
+	mp.values[sessionId] = memStore
 	mp.lock.Unlock()
 
-	return NewMemoryStore(), nil
+	return memStore, nil
+}
+
+
+
+// regenerate session
+func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+	mp.lock.RLock()
+	memStore, ok := mp.values[oldSessionId]
+	if ok {
+		mp.lock.RUnlock()
+		// insert new session and delete old session
+		mp.lock.Lock()
+		mp.values[sessionId] = memStore
+		delete(mp.values, oldSessionId)
+		mp.lock.Unlock()
+		return memStore, nil
+	}
+	mp.lock.RUnlock()
+
+	memStore = NewMemoryStore()
+	mp.lock.Lock()
+	mp.values[sessionId] = memStore
+	mp.lock.Unlock()
+
+	return memStore, nil
 }
 
 // destroy session by sessionId
