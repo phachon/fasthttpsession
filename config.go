@@ -11,7 +11,8 @@ func NewDefaultConfig() *Config {
 		CookieName: "fasthttpsessionid",
 		Domain: "",
 		Expires: time.Hour * 2,
-		GCLifetime: 300,
+		GCLifetime: 5,
+		SessionLifetime: 60,
 		Secure: true,
 		SessionIdInURLQuery: false,
 		SessionNameInUrlQuery: "",
@@ -40,8 +41,11 @@ type Config struct {
 	// >0 is the time.Duration which the session cookies should expire.
 	Expires time.Duration
 
-	// session max life time
+	// gc life time
 	GCLifetime int64
+
+	// session life time
+	SessionLifetime int64
 
 	// set whether to pass this bar cookie only through HTTPS
 	Secure bool

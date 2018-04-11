@@ -3,6 +3,8 @@ package memory
 import (
 	"fasthttpsession"
 	"sync"
+	"time"
+	"errors"
 )
 
 // session memory provider
@@ -11,9 +13,11 @@ const ProviderName = "memory"
 
 type Provider struct {
 	lock sync.RWMutex
+	config fasthttpsession.ProviderConfig
 	values map[string]*Store
 }
 
+// new memory provider
 func NewProvider() *Provider {
 	return &Provider{
 		values: make(map[string]*Store),
@@ -22,7 +26,25 @@ func NewProvider() *Provider {
 
 // init provider config
 func (mp *Provider) Init(memoryConfig fasthttpsession.ProviderConfig) error {
+	if memoryConfig.Name() != ProviderName {
+		return errors.New("memory init error, config must memory config")
+	}
+	mp.config = memoryConfig
 	return nil
+}
+
+// session garbage collection
+func (mp *Provider) GC(sessionLifetime int64) {
+	mp.lock.RLock()
+	for sessionId, value := range mp.values {
+		if time.Now().Unix() >= value.LastActiveTime + sessionLifetime {
+			mp.lock.RUnlock()
+			// destroy session sessionId
+			mp.Destroy(sessionId)
+			return
+		}
+	}
+	mp.lock.RUnlock()
 }
 
 // session id is exist
@@ -66,6 +88,7 @@ func (mp *Provider) Count() int {
 	return len(mp.values)
 }
 
+// register session provider
 func init()  {
 	fasthttpsession.Register(ProviderName, NewProvider())
 }

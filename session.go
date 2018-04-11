@@ -3,6 +3,8 @@ package fasthttpsession
 import (
 	"github.com/valyala/fasthttp"
 	"errors"
+	"time"
+	"fmt"
 )
 
 // Session struct
@@ -25,8 +27,7 @@ func Register(providerName string, provider Provider)  {
 	providers[providerName] = provider
 }
 
-
-// return new Session, default provider file
+// return new Session
 func NewSession(cfg *Config) *Session {
 	session := &Session{
 		config: cfg,
@@ -39,20 +40,41 @@ func NewSession(cfg *Config) *Session {
 func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig) error {
 	provider, ok := providers[providerName]
 	if !ok {
-		return errors.New("session: session provider "+providerName+" not found!")
+		return errors.New("session: session provider "+providerName+" not registered!")
 	}
-
 	err := provider.Init(providerConfig)
 	if err != nil {
 		return err
 	}
-
 	s.provider = provider
+
+	// start gc
+	go func() {
+		defer func() {
+			e := recover()
+			if e != nil {
+				panic(errors.New(fmt.Sprintf("session gc crash, %v", e)))
+			}
+		}()
+		s.gc()
+	}()
 	return nil
 }
 
+// start session gc process.
+func (s *Session) gc() {
+	for {
+		select {
+		case <-time.After(time.Duration(s.config.GCLifetime) * time.Second):
+			s.provider.GC(s.config.SessionLifetime)
+		}
+	}
+}
+
 // session start
-// return session provider
+// 1. get sessionId from fasthttp ctx
+// 2. if sessionId is empty, generator sessionId and set response Set-Cookie
+// 3. return session store
 func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, err error) {
 
 	sessionId, err := s.GetSessionId(ctx)
@@ -81,7 +103,7 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 	if err != nil {
 		return
 	}
-	// set cookie
+	// set response cookie
 	NewCookie().Set(ctx,
 		s.config.CookieName,
 		encodeCookieValue,
@@ -93,7 +115,7 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 
 // get session id
 // 1. get session id by reading from cookie
-// 2. get session id from query or http headers
+// 2. get session id from query
 // 3. get session id from http headers
 func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) (string, error) {
 
@@ -119,7 +141,7 @@ func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) (string, error) {
 	return "", nil
 }
 
-// destroy session by its id in fasthttp request
+// destroy session in fasthttp ctx
 func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 
 	// delete header if sessionId in http Header
