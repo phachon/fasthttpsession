@@ -4,10 +4,11 @@ package main
 
 import (
 	"github.com/phachon/fasthttpsession"
+	"github.com/phachon/fasthttpsession/memory"
 	"github.com/valyala/fasthttp"
 	"log"
-	"github.com/phachon/fasthttpsession/memory"
 	"fmt"
+	"os"
 )
 
 // default config
@@ -25,6 +26,9 @@ var session = fasthttpsession.NewSession(fasthttpsession.NewDefaultConfig())
 //	SessionNameInUrlQuery: "",
 //	SessionIdInHttpHeader: false,
 //	SessionNameInHttpHeader: "",
+//	SessionIdGeneratorFunc: func() string {return ""},
+//	EncodeFunc: func(cookieValue string) (string, error) {return "", nil},
+//	DecodeFunc: func(cookieValue string) (string, error) {return "", nil},
 //})
 
 func main()  {
@@ -32,7 +36,8 @@ func main()  {
 	// You must set up provider before use
 	err := session.SetProvider("memory", &memory.Config{})
 	if err != nil {
-		panic(err)
+		log.Println(err.Error())
+		os.Exit(1)
 	}
 	addr := ":8086"
 	log.Println("fasthttpsession memory example server listen: "+addr)
@@ -91,7 +96,11 @@ func indexHandler(ctx *fasthttp.RequestCtx) {
 // set handler
 func setHandler(ctx *fasthttp.RequestCtx) {
 	// start session
-	sessionStore, _ := session.Start(ctx)
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
@@ -103,7 +112,11 @@ func setHandler(ctx *fasthttp.RequestCtx) {
 // get handler
 func getHandler(ctx *fasthttp.RequestCtx) {
 	// start session
-	sessionStore, _ := session.Start(ctx)
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
@@ -119,7 +132,11 @@ func getHandler(ctx *fasthttp.RequestCtx) {
 // delete handler
 func deleteHandle(ctx *fasthttp.RequestCtx) {
 	// start session
-	sessionStore, _ := session.Start(ctx)
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
@@ -136,7 +153,11 @@ func deleteHandle(ctx *fasthttp.RequestCtx) {
 // get all handler
 func getAllHandle(ctx *fasthttp.RequestCtx) {
 	// start session
-	sessionStore, _ := session.Start(ctx)
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
@@ -154,7 +175,11 @@ func getAllHandle(ctx *fasthttp.RequestCtx) {
 // flush handle
 func flushHandle(ctx *fasthttp.RequestCtx) {
 	// start session
-	sessionStore, _ := session.Start(ctx)
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
@@ -173,8 +198,13 @@ func destroyHandle(ctx *fasthttp.RequestCtx) {
 
 // get sessionId handle
 func sessionIdHandle(ctx *fasthttp.RequestCtx) {
-	// destroy session
-	sessionStore, _ := session.Start(ctx)
+	// start session
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
+	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
 	sessionId := sessionStore.GetSessionId()
@@ -183,7 +213,13 @@ func sessionIdHandle(ctx *fasthttp.RequestCtx) {
 
 // regenerate handler
 func regenerateHandle(ctx *fasthttp.RequestCtx) {
-	sessionStore, _ := session.Regenerate(ctx)
+	// start session
+	sessionStore, err := session.Start(ctx)
+	if err != nil {
+		ctx.SetBodyString(err.Error())
+		return
+	}
+	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
 	sessionStore.Set("name", "foo")

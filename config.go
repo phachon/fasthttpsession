@@ -63,7 +63,7 @@ type Config struct {
 	SessionNameInHttpHeader string
 
 	// SessionIdGeneratorFunc should returns a random session id.
-	SessionIdGeneratorFunc func() (string, error)
+	SessionIdGeneratorFunc func() string
 
 	// Encode the cookie value if not nil.
 	EncodeFunc func(cookieValue string) (string, error)
@@ -78,7 +78,7 @@ type ProviderConfig interface {
 }
 
 // sessionId generator
-func (c *Config) SessionIdGenerator() (string, error) {
+func (c *Config) SessionIdGenerator() string {
 	sessionIdGenerator := c.SessionIdGeneratorFunc
 	if sessionIdGenerator == nil {
 		return c.defaultSessionIdGenerator()
@@ -88,14 +88,17 @@ func (c *Config) SessionIdGenerator() (string, error) {
 }
 
 // default sessionId generator => uuid
-func (c *Config) defaultSessionIdGenerator() (string, error) {
+func (c *Config) defaultSessionIdGenerator() string {
 	id, err := uuid.NewV4()
-	return id.String(), err
+	if err != nil {
+		return ""
+	}
+	return id.String()
 }
 
 // encode cookie value
-func (c *Config) Encode(cookieValue string) (string, error) {
-	encode := c.EncodeFunc;
+func (c *Config) Encode(cookieValue string) string {
+	encode := c.EncodeFunc
 	if encode != nil {
 		newVal, err := encode(cookieValue)
 		if err == nil {
@@ -104,15 +107,15 @@ func (c *Config) Encode(cookieValue string) (string, error) {
 			cookieValue = ""
 		}
 	}
-	return cookieValue, nil
+	return cookieValue
 }
 
 // decode cookie value
-func (c *Config) Decode(cookieValue string) (string, error) {
+func (c *Config) Decode(cookieValue string) string {
 	if cookieValue == "" {
-		return "", nil
+		return ""
 	}
-	decode := c.DecodeFunc;
+	decode := c.DecodeFunc
 	if decode != nil {
 		newVal, err := decode(cookieValue)
 		if err == nil {
@@ -121,5 +124,5 @@ func (c *Config) Decode(cookieValue string) (string, error) {
 			cookieValue = ""
 		}
 	}
-	return cookieValue, nil
+	return cookieValue
 }
