@@ -73,10 +73,6 @@ type Config struct {
 
 }
 
-type ProviderConfig interface {
-	Name() string
-}
-
 // sessionId generator
 func (c *Config) SessionIdGenerator() string {
 	sessionIdGenerator := c.SessionIdGeneratorFunc

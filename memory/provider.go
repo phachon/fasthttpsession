@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 	"errors"
+	"reflect"
 )
 
 // session memory provider
@@ -13,13 +14,14 @@ const ProviderName = "memory"
 
 type Provider struct {
 	lock sync.RWMutex
-	config fasthttpsession.ProviderConfig
+	config *Config
 	values map[string]*Store
 }
 
 // new memory provider
 func NewProvider() *Provider {
 	return &Provider{
+		config: &Config{},
 		values: make(map[string]*Store),
 	}
 }
@@ -27,9 +29,11 @@ func NewProvider() *Provider {
 // init provider config
 func (mp *Provider) Init(memoryConfig fasthttpsession.ProviderConfig) error {
 	if memoryConfig.Name() != ProviderName {
-		return errors.New("memory init error, config must memory config")
+		return errors.New("session memory provider init error, config must memory config")
 	}
-	mp.config = memoryConfig
+	vc := reflect.ValueOf(memoryConfig)
+	mc := vc.Interface().(*Config)
+	mp.config = mc
 	return nil
 }
 
@@ -75,8 +79,6 @@ func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 
 	return memStore, nil
 }
-
-
 
 // regenerate session
 func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {

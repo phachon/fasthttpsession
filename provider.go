@@ -9,3 +9,7 @@ type Provider interface {
 	Destroy(string) error
 	Count() int
 }
+
+type ProviderConfig interface {
+	Name() string
+}
