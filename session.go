@@ -150,6 +150,10 @@ func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) string {
 // regenerate a session id for this SessionStore
 func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, err error) {
 
+	if s.provider == nil {
+		return sessionStore, errors.New("session regenerate error, not set provider")
+	}
+
 	// generator new session id
 	sessionId := s.config.SessionIdGenerator()
 	if sessionId == "" {
