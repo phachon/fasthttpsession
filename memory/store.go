@@ -8,9 +8,9 @@ import (
 
 // session memory store
 
-func NewMemoryStore() *Store {
+func NewMemoryStore(sessionId string) *Store {
 	memStore := &Store{}
-	memStore.SessionId = ""
+	memStore.SessionId = sessionId
 	memStore.Data = make(map[interface{}]interface{})
 	memStore.LastActiveTime = time.Now().Unix()
 	return memStore

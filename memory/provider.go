@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 	"errors"
+	"fmt"
 )
 
 // session memory provider
@@ -53,8 +54,10 @@ func (mp *Provider) SessionIdIsExist(sessionId string) bool {
 	defer mp.lock.RUnlock()
 	_, ok := mp.values[sessionId]
 	if ok {
+		fmt.Println("1")
 		return true
 	}
+	fmt.Println("0")
 	return false
 }
 
@@ -68,7 +71,7 @@ func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 	}
 	mp.lock.RUnlock()
 
-	memStore = NewMemoryStore()
+	memStore = NewMemoryStore(sessionId)
 	mp.lock.Lock()
 	mp.values[sessionId] = memStore
 	mp.lock.Unlock()
@@ -93,7 +96,7 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	}
 	mp.lock.RUnlock()
 
-	memStore = NewMemoryStore()
+	memStore = NewMemoryStore(sessionId)
 	mp.lock.Lock()
 	mp.values[sessionId] = memStore
 	mp.lock.Unlock()

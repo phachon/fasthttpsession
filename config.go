@@ -11,7 +11,7 @@ func NewDefaultConfig() *Config {
 		CookieName: "fasthttpsessionid",
 		Domain: "",
 		Expires: time.Hour * 2,
-		GCLifetime: 5,
+		GCLifetime: 3,
 		SessionLifetime: 60,
 		Secure: true,
 		SessionIdInURLQuery: false,
