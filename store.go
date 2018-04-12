@@ -3,7 +3,6 @@ package fasthttpsession
 import (
 	"sync"
 	"github.com/valyala/fasthttp"
-	"time"
 )
 
 // session store struct
@@ -19,60 +18,65 @@ type SessionStore interface {
 }
 
 type Store struct {
-	SessionId       string
+	sessionId       string
 	Lock            sync.RWMutex
-	Data            map[interface{}]interface{}
-	LastActiveTime  int64
+	data            map[interface{}]interface{}
 }
 
-// get Data by key
+// init store data and sessionId
+func (s *Store) Init(sessionId string, data map[interface{}]interface{}) {
+	s.sessionId = sessionId
+	s.data = data
+}
+
+// get data by key
 func (s *Store) Get(key interface{}) interface{} {
 	s.Lock.RLock()
 	defer s.Lock.RUnlock()
-	value, ok := s.Data[key]
+	value, ok := s.data[key]
 	if ok {
 		return value
 	}
 	return nil
 }
 
-// get all Data
+// get all data
 func (s *Store) GetAll() map[interface{}]interface{} {
 	s.Lock.RLock()
 	defer s.Lock.RUnlock()
-	return s.Data
+	return s.data
 }
 
-// set Data
+// set data
 func (s *Store) Set(key interface{}, value interface{}) {
 	s.Lock.Lock()
 	defer s.Lock.Unlock()
-	s.Data[key] = value
+	s.data[key] = value
 }
 
-// delete Data by key
+// delete data by key
 func (s *Store) Delete(key interface{}) {
 	s.Lock.Lock()
 	defer s.Lock.Unlock()
-	delete(s.Data, key)
+	delete(s.data, key)
 }
 
-// flush all Data
+// flush all data
 func (s *Store) Flush() {
 	s.Lock.Lock()
 	defer s.Lock.Unlock()
-	s.Data = make(map[interface{}]interface{})
+	s.data = make(map[interface{}]interface{})
 }
 
 // get session id
 func (s *Store) GetSessionId() string {
-	return s.SessionId
+	return s.sessionId
 }
 
-// update session lastActiveTime
-func (s *Store) UpdateLastActiveTime() {
+// lock
+func (s *Store) LockHandle(handle func()) {
 	s.Lock.Lock()
 	defer s.Lock.Unlock()
 
-	s.LastActiveTime = time.Now().Unix()
+	handle()
 }

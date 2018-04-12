@@ -7,6 +7,8 @@ import (
 	"fmt"
 )
 
+var version = "v0.0.1"
+
 // Session struct
 type Session struct {
 	provider Provider
@@ -219,4 +221,8 @@ func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 
 	// delete cookie by cookieName
 	s.cookie.Delete(ctx, s.config.CookieName)
+}
+
+func Version() string {
+	return version
 }

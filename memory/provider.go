@@ -37,7 +37,7 @@ func (mp *Provider) Init(memoryConfig fasthttpsession.ProviderConfig) error {
 func (mp *Provider) GC(sessionLifetime int64) {
 	mp.lock.RLock()
 	for sessionId, value := range mp.values {
-		if time.Now().Unix() >= value.LastActiveTime + sessionLifetime {
+		if time.Now().Unix() >= value.lastActiveTime + sessionLifetime {
 			mp.lock.RUnlock()
 			// destroy session sessionId
 			mp.Destroy(sessionId)
@@ -84,13 +84,14 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	memStore, ok := mp.values[oldSessionId]
 	if ok {
 		mp.lock.RUnlock()
-		// insert new session and delete old session
+		// insert new session store
 		mp.lock.Lock()
-		memStore.SessionId = sessionId
-		mp.values[sessionId] = memStore
+		newMemStore := NewMemoryStoreData(sessionId, memStore.GetAll())
+		mp.values[sessionId] = newMemStore
+		// delete old session store
 		delete(mp.values, oldSessionId)
 		mp.lock.Unlock()
-		return memStore, nil
+		return newMemStore, nil
 	}
 	mp.lock.RUnlock()
 

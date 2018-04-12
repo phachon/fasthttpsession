@@ -8,20 +8,30 @@ import (
 
 // session memory store
 
+// new default memory store
 func NewMemoryStore(sessionId string) *Store {
 	memStore := &Store{}
-	memStore.SessionId = sessionId
-	memStore.Data = make(map[interface{}]interface{})
-	memStore.LastActiveTime = time.Now().Unix()
+	memStore.Init(sessionId, make(map[interface{}]interface{}))
+	return memStore
+}
+
+// new memory store data
+func NewMemoryStoreData(sessionId string, data map[interface{}]interface{}) *Store {
+	memStore := &Store{}
+	memStore.Init(sessionId, data)
 	return memStore
 }
 
 type Store struct {
 	fasthttpsession.Store
+	lastActiveTime  int64
 }
 
 // save store
 func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
-	ms.UpdateLastActiveTime()
+	ms.Lock.Lock()
+	defer ms.Lock.Unlock()
+
+	ms.lastActiveTime = time.Now().Unix()
 	return nil
 }

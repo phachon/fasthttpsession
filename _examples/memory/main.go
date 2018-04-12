@@ -71,7 +71,21 @@ func requestRouter(ctx *fasthttp.RequestCtx) {
 
 // index handler
 func indexHandler(ctx *fasthttp.RequestCtx) {
-	ctx.SetBodyString("Welcome to use fasthttpsession, you should request to the /set, /get, /delete, /flush,/destroy instead")
+
+	html := "<h2>Welcome to use fasthttpsession "+fasthttpsession.Version()+", you should request to the: </h2>"
+
+	html += `> <a href="/">/</a><br>`
+	html += `> <a href="/set">set</a><br>`
+	html += `> <a href="/get">get</a><br>`
+	html += `> <a href="/delete">delete</a><br>`
+	html += `> <a href="/getAll">getAll</a><br>`
+	html += `> <a href="/flush">flush</a><br>`
+	html += `> <a href="/destroy">destroy</a><br>`
+	html += `> <a href="/sessionid">sessionid</a><br>`
+	html += `> <a href="/regenerate">regenerate</a><br>`
+
+	ctx.SetContentType("text/html;charset=utf-8")
+	ctx.SetBodyString(html)
 }
 
 // set handler
