@@ -1,7 +1,7 @@
 package file
 
 import (
-	"fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
 )
 

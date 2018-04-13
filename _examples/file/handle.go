@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/valyala/fasthttp"
 	"fmt"
-	"fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 )
 
 // request router

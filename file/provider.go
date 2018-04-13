@@ -1,10 +1,12 @@
 package file
 
 import (
-	"fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 	"sync"
 	"errors"
 	"reflect"
+	"os"
+	"path"
 )
 
 // session file provider
@@ -13,15 +15,15 @@ const ProviderName = "file"
 
 type Provider struct {
 	lock sync.Mutex
+	file *file
 	config *Config
 }
 
 // new file provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{
-			SavePath: "",
-		},
+		file: &file{},
+		config: &Config{},
 	}
 }
 
@@ -34,6 +36,12 @@ func (fp *Provider) Init(fileConfig fasthttpsession.ProviderConfig) error {
 	vc := reflect.ValueOf(fileConfig)
 	fc := vc.Interface().(*Config)
 	fp.config = fc
+
+	// path is exist
+	if !fp.file.pathIsExists(fp.config.SavePath) {
+		return os.MkdirAll(fp.config.SavePath, 0777)
+	}
+
 	return nil
 }
 
@@ -47,14 +55,20 @@ func (fp *Provider) SessionIdIsExist(sessionId string) bool {
 	fp.lock.Lock()
 	defer fp.lock.Unlock()
 
-
-	return false
+	return fp.file.pathIsExists(fp.getFilePath(sessionId))
 }
 
 // read session store by session id
 func (fp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+	fp.lock.Lock()
+	defer fp.lock.Unlock()
 
-
+	//sessionInfo, err := fp.file.getContent(fp.getFilePath(sessionId))
+	//if err != nil {
+	//
+	//} else {
+	//
+	//}
 	return &Store{}, nil
 }
 
@@ -76,9 +90,14 @@ func (fp *Provider) Count() int {
 	return 0
 }
 
-// get sessionId file
-func (fp *Provider) GetSessionFile(sessionId string) {
+// get session file path
+func (fp *Provider) getFilePath(sessionId string) string {
+	return path.Join(fp.config.SavePath, string(sessionId[0]), string(sessionId[1]), fp.sessionFileName(sessionId))
+}
 
+// get sessionId filename
+func (fp *Provider) sessionFileName(sessionId string) string {
+	return sessionId + fp.config.Suffix
 }
 
 // register session provider

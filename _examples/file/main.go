@@ -3,8 +3,8 @@ package main
 // fasthttpsession file provider example
 
 import (
-	"fasthttpsession"
-	"fasthttpsession/file"
+	"github.com/phachon/fasthttpsession"
+	"github.com/phachon/fasthttpsession/file"
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
@@ -34,7 +34,7 @@ func main()  {
 
 	// You must set up provider before use
 	err := session.SetProvider("file", &file.Config{
-		SavePath: "/tmp",
+		SavePath: "/tmp/session", // session file save path
 	})
 
 	if err != nil {

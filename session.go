@@ -32,6 +32,20 @@ func Register(providerName string, provider Provider)  {
 
 // return new Session
 func NewSession(cfg *Config) *Session {
+
+	if cfg.CookieName == "" {
+		cfg.CookieName = defaultCookieName
+	}
+	if cfg.GCLifetime == 0 {
+		cfg.GCLifetime = defaultGCLifetime
+	}
+	if cfg.SessionLifetime == 0 {
+		cfg.SessionLifetime = cfg.GCLifetime
+	}
+	if cfg.SessionIdGeneratorFunc == nil {
+		cfg.SessionIdGeneratorFunc = cfg.defaultSessionIdGenerator
+	}
+
 	session := &Session{
 		config: cfg,
 		cookie: NewCookie(),

@@ -5,13 +5,22 @@ import (
 	"time"
 )
 
+var (
+
+	defaultCookieName = "fasthttpsessionid"
+
+	defaultExpires = time.Hour * 2
+
+	defaultGCLifetime = int64(3)
+)
+
 // new default config
 func NewDefaultConfig() *Config {
 	config := &Config{
-		CookieName: "fasthttpsessionid",
+		CookieName: defaultCookieName,
 		Domain: "",
-		Expires: time.Hour * 2,
-		GCLifetime: 3,
+		Expires: defaultExpires,
+		GCLifetime: defaultGCLifetime,
 		SessionLifetime: 60,
 		Secure: true,
 		SessionIdInURLQuery: false,
@@ -41,10 +50,10 @@ type Config struct {
 	// >0 is the time.Duration which the session cookies should expire.
 	Expires time.Duration
 
-	// gc life time
+	// gc life time(s)
 	GCLifetime int64
 
-	// session life time
+	// session life time(s)
 	SessionLifetime int64
 
 	// set whether to pass this bar cookie only through HTTPS
