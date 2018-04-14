@@ -1,7 +1,6 @@
 package fasthttpsession
 
 import (
-	"sync"
 	"github.com/valyala/fasthttp"
 )
 
@@ -19,7 +18,6 @@ type SessionStore interface {
 
 type Store struct {
 	sessionId       string
-	Lock            sync.RWMutex
 	data            *CCMap
 }
 
@@ -58,12 +56,4 @@ func (s *Store) Flush() {
 // get session id
 func (s *Store) GetSessionId() string {
 	return s.sessionId
-}
-
-// lock
-func (s *Store) LockHandle(handle func()) {
-	s.Lock.Lock()
-	defer s.Lock.Unlock()
-
-	handle()
 }

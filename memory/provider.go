@@ -2,7 +2,6 @@ package memory
 
 import (
 	"github.com/phachon/fasthttpsession"
-	"sync"
 	"time"
 	"errors"
 	"reflect"
@@ -13,16 +12,15 @@ import (
 const ProviderName = "memory"
 
 type Provider struct {
-	lock sync.RWMutex
 	config *Config
-	values map[string]*Store
+	values *fasthttpsession.CCMap
 }
 
 // new memory provider
 func NewProvider() *Provider {
 	return &Provider{
 		config: &Config{},
-		values: make(map[string]*Store),
+		values: fasthttpsession.NewDefaultCCMap(),
 	}
 }
 
@@ -39,23 +37,18 @@ func (mp *Provider) Init(memoryConfig fasthttpsession.ProviderConfig) error {
 
 // session garbage collection
 func (mp *Provider) GC(sessionLifetime int64) {
-	mp.lock.RLock()
-	for sessionId, value := range mp.values {
-		if time.Now().Unix() >= value.lastActiveTime + sessionLifetime {
-			mp.lock.RUnlock()
+	for sessionId, value := range mp.values.GetAll() {
+		if time.Now().Unix() >= value.(*Store).lastActiveTime + sessionLifetime {
 			// destroy session sessionId
 			mp.Destroy(sessionId)
 			return
 		}
 	}
-	mp.lock.RUnlock()
 }
 
 // session id is exist
 func (mp *Provider) SessionIdIsExist(sessionId string) bool {
-	mp.lock.RLock()
-	defer mp.lock.RUnlock()
-	_, ok := mp.values[sessionId]
+	ok := mp.values.IsExist(sessionId)
 	if ok {
 		return true
 	}
@@ -64,58 +57,45 @@ func (mp *Provider) SessionIdIsExist(sessionId string) bool {
 
 // read session store by session id
 func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
-	mp.lock.RLock()
-	memStore, ok := mp.values[sessionId]
-	if ok {
-		mp.lock.RUnlock()
-		return memStore, nil
+	memStore := mp.values.Get(sessionId)
+	if memStore != nil {
+		return memStore.(*Store), nil
 	}
-	mp.lock.RUnlock()
 
-	memStore = NewMemoryStore(sessionId)
-	mp.lock.Lock()
-	mp.values[sessionId] = memStore
-	mp.lock.Unlock()
+	newMemStore := NewMemoryStore(sessionId)
+	mp.values.Set(sessionId, newMemStore)
 
-	return memStore, nil
+	return newMemStore, nil
 }
 
 // regenerate session
 func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
-	mp.lock.RLock()
-	memStore, ok := mp.values[oldSessionId]
-	if ok {
-		mp.lock.RUnlock()
+	memStoreInter := mp.values.Get(oldSessionId)
+	if memStoreInter != nil {
+		memStore := memStoreInter.(*Store)
 		// insert new session store
-		mp.lock.Lock()
 		newMemStore := NewMemoryStoreData(sessionId, memStore.GetAll())
-		mp.values[sessionId] = newMemStore
+		mp.values.Set(sessionId, newMemStore)
 		// delete old session store
-		delete(mp.values, oldSessionId)
-		mp.lock.Unlock()
+		mp.values.Delete(oldSessionId)
 		return newMemStore, nil
 	}
-	mp.lock.RUnlock()
 
-	memStore = NewMemoryStore(sessionId)
-	mp.lock.Lock()
-	mp.values[sessionId] = memStore
-	mp.lock.Unlock()
+	memStore := NewMemoryStore(sessionId)
+	mp.values.Set(sessionId, memStore)
 
 	return memStore, nil
 }
 
 // destroy session by sessionId
 func (mp *Provider) Destroy(sessionId string) error {
-	mp.lock.Lock()
-	defer mp.lock.Unlock()
-	delete(mp.values, sessionId)
+	mp.values.Delete(sessionId)
 	return nil
 }
 
 // session values count
 func (mp *Provider) Count() int {
-	return len(mp.values)
+	return mp.values.Count()
 }
 
 // register session provider

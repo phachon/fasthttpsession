@@ -11,8 +11,6 @@ type Store struct {
 
 // save store
 func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
-	ms.Lock.Lock()
-	defer ms.Lock.Unlock()
 
 	return nil
 }

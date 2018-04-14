@@ -4,6 +4,7 @@ import (
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
 	"time"
+	"sync"
 )
 
 // session memory store
@@ -24,13 +25,14 @@ func NewMemoryStoreData(sessionId string, data map[string]interface{}) *Store {
 
 type Store struct {
 	fasthttpsession.Store
+	lock            sync.RWMutex
 	lastActiveTime  int64
 }
 
 // save store
 func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
-	ms.Lock.Lock()
-	defer ms.Lock.Unlock()
+	ms.lock.Lock()
+	defer ms.lock.Unlock()
 
 	ms.lastActiveTime = time.Now().Unix()
 	return nil
