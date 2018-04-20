@@ -34,7 +34,7 @@ func main()  {
 
 	// You must set up provider before use
 	err := session.SetProvider("file", &file.Config{
-		SavePath: "/tmp/session", // session file save path
+		SavePath: ".session", // session file save path
 	})
 
 	if err != nil {

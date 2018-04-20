@@ -33,6 +33,9 @@ func (s *utils) JsonDecode(data []byte) (map[string]interface{}, error) {
 
 // gob encode
 func (s *utils) GobEncode(data map[string]interface{}) ([]byte, error) {
+	if len(data) == 0 {
+		return []byte(""), nil
+	}
 	for _, v := range data {
 		gob.Register(v)
 	}
@@ -47,12 +50,16 @@ func (s *utils) GobEncode(data map[string]interface{}) ([]byte, error) {
 
 // gob decode data to map
 func (s *utils) GobDecode(data []byte) (map[string]interface{}, error) {
+
+	if len(data) == 0 {
+		return make(map[string]interface{}), nil
+	}
 	buf := bytes.NewBuffer(data)
 	dec := gob.NewDecoder(buf)
 	var out map[string]interface{}
 	err := dec.Decode(&out)
 	if err != nil {
-		return nil, err
+		return make(map[string]interface{}), err
 	}
 	return out, nil
 }

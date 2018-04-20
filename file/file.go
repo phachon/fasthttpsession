@@ -29,7 +29,7 @@ func (f *file) pathIsExists(path string) bool {
 }
 
 // get file content
-func (f *file) getContent(filename string) (data string, err error) {
+func (f *file) getContent(filename string) (data []byte, err error) {
 	fi, err := os.Open(filename)
 	if err != nil {
 		return
@@ -37,11 +37,18 @@ func (f *file) getContent(filename string) (data string, err error) {
 	defer fi.Close()
 
 	fd, err := ioutil.ReadAll(fi)
-	return string(fd), nil
+	return fd, nil
+}
+
+// get file update time
+func (f *file) getModifyTime(filename string) int64 {
+	fileInfo, _ := os.Stat(filename)
+	modTime := fileInfo.ModTime()
+	return modTime.Unix()
 }
 
 // Gets all files in the specified directory and all subdirectories, and can match the suffix filter.
-func (f *file) WalkDir(dirPth, suffix string) (files []string, err error) {
+func (f *file) walkDir(dirPth, suffix string) (files []string, err error) {
 	files = make([]string, 0, 30)
 	if suffix != "" {
 		suffix = strings.ToUpper(suffix)
@@ -63,4 +70,29 @@ func (f *file) WalkDir(dirPth, suffix string) (files []string, err error) {
 		return nil
 	})
 	return files, err
+}
+
+//  Gets all files count in the specified directory and all subdirectories, and can match the suffix filter.
+func (f *file) count(dirPth, suffix string) (total int, err error)  {
+
+	if suffix != "" {
+		suffix = strings.ToUpper(suffix)
+	}
+	err = filepath.Walk(dirPth, func(filename string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if fi.IsDir() {
+			return nil
+		}
+		if suffix != "" {
+			if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
+				total += 1
+			}
+		}else {
+			total += 1
+		}
+		return nil
+	})
+	return total, err
 }
