@@ -65,17 +65,20 @@ func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig
 		return err
 	}
 	s.provider = provider
+	s.provider.MaxLifeTime(s.config.SessionLifetime)
 
 	// start gc
-	go func() {
-		defer func() {
-			e := recover()
-			if e != nil {
-				panic(errors.New(fmt.Sprintf("session gc crash, %v", e)))
-			}
+	if s.provider.NeedGC() {
+		go func() {
+			defer func() {
+				e := recover()
+				if e != nil {
+					panic(errors.New(fmt.Sprintf("session gc crash, %v", e)))
+				}
+			}()
+			s.gc()
 		}()
-		s.gc()
-	}()
+	}
 	return nil
 }
 
@@ -100,15 +103,18 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 	}
 
 	sessionId := s.GetSessionId(ctx)
-	// if sessionId is not empty, check is exit in session provider
-	if sessionId != "" && s.provider.SessionIdIsExist(sessionId) {
-		return s.provider.ReadStore(sessionId)
-	}
-	// new session id
-	sessionId = s.config.SessionIdGenerator()
 	if sessionId == "" {
-		return sessionStore, errors.New("session generator sessionId is empty")
+		// new generator session id
+		sessionId = s.config.SessionIdGenerator()
+		if sessionId == "" {
+			return sessionStore, errors.New("session generator sessionId is empty")
+		}
 	}
+
+	// if sessionId is not empty, check is exit in session provider
+	//if s.provider.SessionIdIsExist(sessionId) {
+	//	return s.provider.ReadStore(sessionId)
+	//}
 	sessionStore, err = s.provider.ReadStore(sessionId)
 	if err != nil {
 		return

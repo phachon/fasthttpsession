@@ -14,6 +14,7 @@ const ProviderName = "memory"
 type Provider struct {
 	config *Config
 	values *fasthttpsession.CCMap
+	maxLifeTime int64
 }
 
 // new memory provider
@@ -21,6 +22,7 @@ func NewProvider() *Provider {
 	return &Provider{
 		config: &Config{},
 		values: fasthttpsession.NewDefaultCCMap(),
+		maxLifeTime: 0,
 	}
 }
 
@@ -35,6 +37,16 @@ func (mp *Provider) Init(memoryConfig fasthttpsession.ProviderConfig) error {
 	return nil
 }
 
+// set maxLifeTime
+func (mp *Provider) MaxLifeTime(lifeTime int64)  {
+	mp.maxLifeTime = lifeTime
+}
+
+// need gc
+func (mp *Provider) NeedGC() bool {
+	return true
+}
+
 // session garbage collection
 func (mp *Provider) GC(sessionLifetime int64) {
 	for sessionId, value := range mp.values.GetAll() {
@@ -44,15 +56,6 @@ func (mp *Provider) GC(sessionLifetime int64) {
 			return
 		}
 	}
-}
-
-// session id is exist
-func (mp *Provider) SessionIdIsExist(sessionId string) bool {
-	ok := mp.values.IsExist(sessionId)
-	if ok {
-		return true
-	}
-	return false
 }
 
 // read session store by session id

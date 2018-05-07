@@ -13,17 +13,17 @@ type Store struct {
 }
 
 // save store
-func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
+func (fs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	fileProvider.lock.Lock()
 	defer fileProvider.lock.Unlock()
 
-	sessionId := ms.GetSessionId()
+	sessionId := fs.GetSessionId()
 
 	_, _, fullFileName := fileProvider.getSessionFile(sessionId)
 
 	if fileProvider.file.pathIsExists(fullFileName) {
-		sessionMap := ms.GetAll()
+		sessionMap := fs.GetAll()
 		sessionInfo, _ := fileProvider.config.SerializeFunc(sessionMap)
 		ioutil.WriteFile(fullFileName, sessionInfo, 0777)
 		os.Chtimes(fullFileName, time.Now(), time.Now())

@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"io/ioutil"
 	"strings"
-	"fmt"
 )
 
 // session file provider
@@ -24,6 +23,7 @@ type Provider struct {
 	lock sync.RWMutex
 	file *file
 	config *Config
+	maxLifeTime int64
 }
 
 // new file provider
@@ -54,10 +54,20 @@ func (fp *Provider) Init(fileConfig fasthttpsession.ProviderConfig) error {
 		fp.config.UnSerializeFunc = fasthttpsession.NewUtils().GobDecode
 	}
 
-	// mkdir save path
+	// create save path
 	os.MkdirAll(fp.config.SavePath, 0777)
 
 	return nil
+}
+
+// set maxLifeTime
+func (fp *Provider) MaxLifeTime(lifeTime int64)  {
+	fp.maxLifeTime = lifeTime
+}
+
+// need gc
+func (fp *Provider) NeedGC() bool {
+	return true
 }
 
 // session garbage collection
@@ -75,16 +85,6 @@ func (fp *Provider) GC(sessionLifetime int64) {
 			}
 		}
 	}
-}
-
-// session id is exist
-func (fp *Provider) SessionIdIsExist(sessionId string) bool {
-	fp.lock.Lock()
-	defer fp.lock.Unlock()
-
-	_, _, fullFileName := fp.getSessionFile(sessionId)
-
-	return fp.file.pathIsExists(fullFileName)
 }
 
 // read session store by session id
@@ -210,7 +210,6 @@ func (fp *Provider) getSessionFile(sessionId string) (string, string, string) {
 func (fp *Provider) removeSessionFile(sessionId string) {
 
 	filePath, _, fullFileName  := fp.getSessionFile(sessionId)
-	fmt.Println(fullFileName)
 	os.Remove(fullFileName)
 
 	// remove empty dir
