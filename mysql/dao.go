@@ -3,9 +3,9 @@ package mysql
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
-	"fmt"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 func newSessionDao(dsn string, tableName string) (*sessionDao, error) {
@@ -15,6 +15,7 @@ func newSessionDao(dsn string, tableName string) (*sessionDao, error) {
 	}
 	return &sessionDao{
 		mysqlConn: conn,
+		tableName: tableName,
 	}, nil
 }
 
@@ -44,7 +45,7 @@ func (dao *sessionDao) countSessions() int {
 // update session by sessionId
 func (dao *sessionDao) updateBySessionId(sessionId string, contents string, lastActiveTime int64) (int64, error) {
 	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=?", dao.tableName)
-	return dao.execute(sqlStr, contents, strconv.FormatInt(lastActiveTime,10))
+	return dao.execute(sqlStr, contents, lastActiveTime)
 }
 
 // delete session by sessionId
@@ -53,19 +54,29 @@ func (dao *sessionDao) deleteBySessionId(sessionId string) (int64, error) {
 	return dao.execute(sqlStr, sessionId)
 }
 
+// delete session by maxLifeTime
 func (dao *sessionDao) deleteSessionByMaxLifeTime(maxLifeTime int64) (int64, error) {
-	sqlStr := fmt.Sprintf("DELETE %s WHERE last_active=?", dao.tableName)
-	return dao.execute(sqlStr, strconv.FormatInt(time.Now().Unix(),10))
+	sqlStr := fmt.Sprintf("DELETE FROM %s WHERE last_active<=?", dao.tableName)
+	lastTime := time.Now().Unix() - maxLifeTime
+	return dao.execute(sqlStr, lastTime)
 }
 
-func (dao *sessionDao) getRows(sql string, args ...string) (results []map[string][]byte, err error) {
+// insert new session
+func (dao *sessionDao) insert(sessionId string, contents string, lastActiveTime int64) (int64, error) {
+	sqlStr := fmt.Sprintf("INSERT INTO %s (session_id, contents, last_active) VALUES (?,?,?)", dao.tableName)
+	return dao.execute(sqlStr, sessionId, contents, lastActiveTime)
+}
+
+// get rows
+// return []map[string][]byte
+func (dao *sessionDao) getRows(sql string, args ...interface{}) (results []map[string][]byte, err error) {
 
 	stmt, err := dao.mysqlConn.Prepare(sql)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
-	rows, err := stmt.Query(args)
+	rows, err := stmt.Query(args...)
 	if err != nil {
 		return
 	}
@@ -97,8 +108,9 @@ func (dao *sessionDao) getRows(sql string, args ...string) (results []map[string
 	return
 }
 
-func (dao *sessionDao) getRow(sql string, args ...string) (res map[string][]byte, err error) {
-	rows, err := dao.getRows(sql)
+// get row
+func (dao *sessionDao) getRow(sql string, args ...interface{}) (res map[string][]byte, err error) {
+	rows, err := dao.getRows(sql, args...)
 	if err != nil {
 		return
 	}
@@ -108,15 +120,19 @@ func (dao *sessionDao) getRow(sql string, args ...string) (res map[string][]byte
 	return
 }
 
-func (dao *sessionDao) execute(sql string, args ...string) (int64, error) {
+// execute(insert, update, delete)
+func (dao *sessionDao) execute(sql string, args ...interface{}) (int64, error) {
 	stmt, err := dao.mysqlConn.Prepare(sql)
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
-	rows, err := stmt.Exec(args)
+
+	rows, err := stmt.Exec(args...)
 	if err != nil {
+		fmt.Println(err.Error())
 		return 0, err
 	}
+	fmt.Println("OK")
 	return rows.RowsAffected()
 }

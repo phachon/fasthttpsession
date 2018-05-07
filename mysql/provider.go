@@ -4,10 +4,7 @@ import (
 	"github.com/phachon/fasthttpsession"
 	"errors"
 	"reflect"
-	_ "github.com/go-sql-driver/mysql"
-	"database/sql"
-	"fmt"
-	"log"
+	"time"
 )
 
 // session mysql provider
@@ -16,14 +13,14 @@ import (
 // #-- ----------------------------------------------------------
 // #-- session table
 // #-- ----------------------------------------------------------
-// DROP TABLE IF EXISTS `session`;
-// CREATE TABLE `session` (
-//   `session_id` varchar(24) NOT NULL DEFAULT '' COMMENT 'Session id',
-//   `last_active` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last active time',
-//   `contents` varchar(1000) NOT NULL DEFAULT '' COMMENT 'Session data',
-//   PRIMARY KEY (`session_id`),
-//   KEY `last_active` (`last_active`)
-// ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session table';
+//DROP TABLE IF EXISTS `session`;
+//CREATE TABLE `session` (
+// `session_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session id',
+// `contents` varchar(1000) NOT NULL DEFAULT '' COMMENT 'Session data',
+// `last_active` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last active time',
+// PRIMARY KEY (`session_id`),
+// KEY `last_active` (`last_active`)
+//) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session table';
 //
 
 const ProviderName = "mysql"
@@ -36,7 +33,7 @@ var (
 type Provider struct {
 	config *Config
 	values *fasthttpsession.CCMap
-	mysqlConn *sql.DB
+	sessionDao *sessionDao
 	maxLifeTime int64
 }
 
@@ -45,7 +42,7 @@ func NewProvider() *Provider {
 	return &Provider{
 		config: &Config{},
 		values: fasthttpsession.NewDefaultCCMap(),
-		mysqlConn: &sql.DB{},
+		sessionDao: &sessionDao{},
 	}
 }
 
@@ -66,15 +63,16 @@ func (mp *Provider) Init(lifeTime int64, mysqlConfig fasthttpsession.ProviderCon
 		return errors.New("session mysql provider init error, config Port not empty")
 	}
 
-	// init mysql conn
-	mysqlConn, err := getMysqlConn(mp.config.getMysqlDSN())
+	// init sessionDao
+	sessionDao, err := newSessionDao(mp.config.getMysqlDSN(), mp.config.TableName)
 	if err != nil {
 		return err
 	}
-	mysqlConn.SetMaxOpenConns(mp.config.SetMaxIdleConn)
-	mysqlConn.SetMaxIdleConns(mp.config.SetMaxIdleConn)
+	sessionDao.mysqlConn.SetMaxOpenConns(mp.config.SetMaxIdleConn)
+	sessionDao.mysqlConn.SetMaxIdleConns(mp.config.SetMaxIdleConn)
 
-	return mysqlConn.Ping()
+	mp.sessionDao = sessionDao
+	return sessionDao.mysqlConn.Ping()
 }
 
 // not need gc
@@ -89,102 +87,67 @@ func (mp *Provider) GC(sessionLifetime int64) {}
 // read session store by session id
 func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
 
-	sqlStr := fmt.Sprintf("SELECT * FROM %s where session_id=?", mp.config.TableName)
-
-	res, err := getRow(mp.mysqlConn, sqlStr, sessionId)
+	sessionValue, err := mp.sessionDao.getSessionBySessionId(sessionId)
 	if err != nil {
 		return nil, err
 	}
-	if len(res) == 0 {
-		//todo insert sessionId
-		return NewmysqlStore(sessionId), nil
+	if len(sessionValue) == 0 {
+		_, err := mp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		if err != nil {
+			return nil, err
+		}
+		return NewMysqlStore(sessionId), nil
 	}
-	if len(res["contents"]) == 0 {
-		return NewmysqlStore(sessionId), nil
+	if len(sessionValue["contents"]) == 0 {
+		return NewMysqlStore(sessionId), nil
 	}
 
-	data, err := utils.GobDecode(res["content"])
+	data, err := utils.GobDecode(sessionValue["contents"])
 	if err != nil {
 		return nil, err
 	}
 
-	return NewmysqlStoreData(sessionId, data), nil
+	return NewMysqlStoreData(sessionId, data), nil
 }
 
 // regenerate session
 func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
 
-
-	sqlStr := fmt.Sprintf("SELECT * FROM %s where session_id=?", mp.config.TableName)
-
-	res, err := getRow(mp.mysqlConn, sqlStr, oldSessionId)
+	sessionValue, err := mp.sessionDao.getSessionBySessionId(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
-	if len(res) == 0 {
-		// old sessionId not exists
-
-		insertSql := fmt.Sprintf("INSERT into ")
-		execute(db, )
-
-
-		return NewmysqlStore(sessionId), nil
-	}
-	if len(res["contents"]) == 0 {
-		return NewmysqlStore(sessionId), nil
+	if (len(sessionValue) == 0) || (len(sessionValue["contents"]) == 0){
+		// old sessionId not exists, insert new sessionId
+		_, err := mp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		if err != nil {
+			return nil, err
+		}
+		return NewMysqlStore(sessionId), nil
 	}
 
-	data, err := utils.GobDecode(res["content"])
+	// delete old session
+	_, err = mp.sessionDao.deleteBySessionId(sessionId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = mp.sessionDao.insert(sessionId, string(sessionValue["contents"]), time.Now().Unix())
 	if err != nil {
 		return nil, err
 	}
 
-	return NewmysqlStoreData(sessionId, data), nil
-
-	conn := rp.mysqlPool.Get()
-	defer conn.Close()
-
-	existed, err := mysql.Int(conn.Do("EXISTS", rp.getmysqlSessionKey(oldSessionId)))
-	if err != nil || existed == 0 {
-		// false
-		conn.Do("SET", rp.getmysqlSessionKey(sessionId), "", "EX", rp.maxLifeTime)
-		return NewmysqlStore(sessionId), nil
-	}
-	// true
-	conn.Do("RENAME", rp.getmysqlSessionKey(oldSessionId), rp.getmysqlSessionKey(sessionId))
-	conn.Do("EXPIRE", rp.getmysqlSessionKey(sessionId), rp.maxLifeTime)
-
-	return rp.ReadStore(sessionId)
+	return mp.ReadStore(sessionId)
 }
 
 // destroy session by sessionId
-func (rp *Provider) Destroy(sessionId string) error {
-	conn := rp.mysqlPool.Get()
-	defer conn.Close()
-
-	existed, err := mysql.Int(conn.Do("EXISTS", rp.getmysqlSessionKey(sessionId)))
-	if err != nil || existed == 0 {
-		return nil
-	}
-	conn.Do("DEL", rp.getmysqlSessionKey(sessionId))
-	return nil
+func (mp *Provider) Destroy(sessionId string) error {
+	_, err := mp.sessionDao.deleteBySessionId(sessionId)
+	return err
 }
 
 // session values count
-func (rp *Provider) Count() int {
-	conn := rp.mysqlPool.Get()
-	defer conn.Close()
-
-	replyMap, err := mysql.Strings(conn.Do("KEYS", rp.config.KeyPrefix+":*"))
-	if err != nil {
-		return 0
-	}
-	return len(replyMap)
-}
-
-// get mysql session key, prefix:sessionId
-func (rp *Provider) getmysqlSessionKey(sessionId string) string {
-	return rp.config.KeyPrefix+":"+sessionId
+func (mp *Provider) Count() int {
+	return mp.sessionDao.countSessions()
 }
 
 // register session provider

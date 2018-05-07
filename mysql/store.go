@@ -3,19 +3,20 @@ package mysql
 import (
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
+	"time"
 )
 
 // session mysql store
 
 // new default mysql store
-func NewmysqlStore(sessionId string) *Store {
+func NewMysqlStore(sessionId string) *Store {
 	mysqlStore := &Store{}
 	mysqlStore.Init(sessionId, make(map[string]interface{}))
 	return mysqlStore
 }
 
 // new mysql store data
-func NewmysqlStoreData(sessionId string, data map[string]interface{}) *Store {
+func NewMysqlStoreData(sessionId string, data map[string]interface{}) *Store {
 	mysqlStore := &Store{}
 	mysqlStore.Init(sessionId, data)
 	return mysqlStore
@@ -26,15 +27,12 @@ type Store struct {
 }
 
 // save store
-func (rs *Store) Save(ctx *fasthttp.RequestCtx) error {
+func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
 
-	b, err := utils.GobEncode(rs.GetAll())
+	b, err := utils.GobEncode(ms.GetAll())
 	if err != nil {
 		return err
 	}
-	conn := provider.mysqlPool.Get()
-	defer conn.Close()
-	conn.Do("SETEX", provider.getmysqlSessionKey(rs.GetSessionId()), provider.maxLifeTime, string(b))
-
-	return nil
+	_, err = provider.sessionDao.updateBySessionId(ms.GetSessionId(), string(b), time.Now().Unix())
+	return err
 }
