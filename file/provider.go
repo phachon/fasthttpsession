@@ -17,7 +17,10 @@ import (
 
 const ProviderName = "file"
 
-var fileProvider = NewProvider()
+var (
+	fileProvider = NewProvider()
+	utils = fasthttpsession.NewUtils()
+)
 
 type Provider struct {
 	lock sync.RWMutex
@@ -48,10 +51,10 @@ func (fp *Provider) Init(lifeTime int64, fileConfig fasthttpsession.ProviderConf
 		return errors.New("session file provider init error, config savePath not empty")
 	}
 	if fp.config.SerializeFunc == nil {
-		fp.config.SerializeFunc = fasthttpsession.NewUtils().GobEncode
+		fp.config.SerializeFunc = utils.GobEncode
 	}
 	if fp.config.UnSerializeFunc == nil {
-		fp.config.UnSerializeFunc = fasthttpsession.NewUtils().GobDecode
+		fp.config.UnSerializeFunc = utils.GobDecode
 	}
 
 	fp.maxLifeTime = lifeTime
