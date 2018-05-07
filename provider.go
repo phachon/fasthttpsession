@@ -1,8 +1,7 @@
 package fasthttpsession
 
 type Provider interface {
-	Init(ProviderConfig) error
-	MaxLifeTime(int64)
+	Init(int64, ProviderConfig) error
 	NeedGC() bool
 	GC(int64)
 	ReadStore(string) (SessionStore, error)

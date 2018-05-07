@@ -35,7 +35,7 @@ func NewProvider() *Provider {
 }
 
 // init provider config
-func (fp *Provider) Init(fileConfig fasthttpsession.ProviderConfig) error {
+func (fp *Provider) Init(lifeTime int64, fileConfig fasthttpsession.ProviderConfig) error {
 	if fileConfig.Name() != ProviderName {
 		return errors.New("session file provider init error, config must file config")
 	}
@@ -54,15 +54,12 @@ func (fp *Provider) Init(fileConfig fasthttpsession.ProviderConfig) error {
 		fp.config.UnSerializeFunc = fasthttpsession.NewUtils().GobDecode
 	}
 
+	fp.maxLifeTime = lifeTime
+
 	// create save path
 	os.MkdirAll(fp.config.SavePath, 0777)
 
 	return nil
-}
-
-// set maxLifeTime
-func (fp *Provider) MaxLifeTime(lifeTime int64)  {
-	fp.maxLifeTime = lifeTime
 }
 
 // need gc

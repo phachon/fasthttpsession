@@ -60,12 +60,11 @@ func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig
 	if !ok {
 		return errors.New("session set provider error, "+providerName+" not registered!")
 	}
-	err := provider.Init(providerConfig)
+	err := provider.Init(s.config.SessionLifetime, providerConfig)
 	if err != nil {
 		return err
 	}
 	s.provider = provider
-	s.provider.MaxLifeTime(s.config.SessionLifetime)
 
 	// start gc
 	if s.provider.NeedGC() {
@@ -110,11 +109,7 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 			return sessionStore, errors.New("session generator sessionId is empty")
 		}
 	}
-
-	// if sessionId is not empty, check is exit in session provider
-	//if s.provider.SessionIdIsExist(sessionId) {
-	//	return s.provider.ReadStore(sessionId)
-	//}
+	// read provider session store
 	sessionStore, err = s.provider.ReadStore(sessionId)
 	if err != nil {
 		return

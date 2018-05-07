@@ -27,19 +27,16 @@ func NewProvider() *Provider {
 }
 
 // init provider config
-func (mp *Provider) Init(memoryConfig fasthttpsession.ProviderConfig) error {
+func (mp *Provider) Init(lifeTime int64, memoryConfig fasthttpsession.ProviderConfig) error {
 	if memoryConfig.Name() != ProviderName {
 		return errors.New("session memory provider init error, config must memory config")
 	}
 	vc := reflect.ValueOf(memoryConfig)
 	mc := vc.Interface().(*Config)
 	mp.config = mc
-	return nil
-}
 
-// set maxLifeTime
-func (mp *Provider) MaxLifeTime(lifeTime int64)  {
 	mp.maxLifeTime = lifeTime
+	return nil
 }
 
 // need gc

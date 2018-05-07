@@ -33,14 +33,27 @@ func NewProvider() *Provider {
 }
 
 // init provider config
-func (rp *Provider) Init(redisConfig fasthttpsession.ProviderConfig) error {
+func (rp *Provider) Init(lifeTime int64, redisConfig fasthttpsession.ProviderConfig) error {
 	if redisConfig.Name() != ProviderName {
 		return errors.New("session redis provider init error, config must redis config")
 	}
 	vc := reflect.ValueOf(redisConfig)
 	rc := vc.Interface().(*Config)
 	rp.config = rc
+	rp.maxLifeTime = lifeTime
 
+	if rp.config.Host == "" {
+		return errors.New("session redis provider init error, config Host not empty")
+	}
+	if rp.config.Port == 0 {
+		return errors.New("session redis provider init error, config Port not empty")
+	}
+	if rp.config.MaxIdle <= 0 {
+		return errors.New("session redis provider init error, config MaxIdle must be more than 0")
+	}
+	if rp.config.IdleTimeout <= 0 {
+		return errors.New("session redis provider init error, config IdleTimeout must be more than 0")
+	}
 	// create redis conn pool
 	rp.redisPool = newRedisPool(rp.config)
 
@@ -49,14 +62,9 @@ func (rp *Provider) Init(redisConfig fasthttpsession.ProviderConfig) error {
 	defer conn.Close()
 	_, err := conn.Do("PING")
 	if err != nil {
-		return err
+		return errors.New("session redis provider init error, "+err.Error())
 	}
 	return nil
-}
-
-// set maxLifeTime
-func (rp *Provider) MaxLifeTime(lifeTime int64)  {
-	rp.maxLifeTime = lifeTime
 }
 
 // not need gc
