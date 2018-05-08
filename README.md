@@ -142,6 +142,8 @@ type Config struct {
 }
 ```
 
+Different session provider config, please look at the Config.go the provider name directory.
+
 # Documents
 
 Document address: [http://godoc.org/github.com/phachon/fasthttpsession](http://godoc.org/github.com/phachon/fasthttpsession)
