@@ -10,17 +10,15 @@ import (
 // session mysql provider
 
 // session Table structure
-// #-- ----------------------------------------------------------
-// #-- session table
-// #-- ----------------------------------------------------------
-//DROP TABLE IF EXISTS `session`;
-//CREATE TABLE `session` (
-//`session_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session id',
-//`contents` TEXT NOT NULL COMMENT 'Session data',
-//`last_active` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last active time',
-//PRIMARY KEY (`session_id`),
-//KEY `last_active` (`last_active`)
-//) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session table';
+//
+// DROP TABLE IF EXISTS `session`;
+// CREATE TABLE `session` (
+//    `session_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session id',
+//    `contents` TEXT NOT NULL COMMENT 'Session data',
+//    `last_active` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last active time',
+//    PRIMARY KEY (`session_id`),
+//    KEY `last_active` (`last_active`)
+// ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session table';
 //
 
 const ProviderName = "mysql"
@@ -125,7 +123,7 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	if err != nil {
 		return nil, err
 	}
-	if (len(sessionValue) == 0) || (len(sessionValue["contents"]) == 0){
+	if len(sessionValue) == 0 {
 		// old sessionId not exists, insert new sessionId
 		_, err := mp.sessionDao.insert(sessionId, "", time.Now().Unix())
 		if err != nil {
@@ -139,6 +137,7 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	if err != nil {
 		return nil, err
 	}
+	// insert new session
 	_, err = mp.sessionDao.insert(sessionId, string(sessionValue["contents"]), time.Now().Unix())
 	if err != nil {
 		return nil, err

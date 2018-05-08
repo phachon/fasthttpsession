@@ -27,16 +27,16 @@ type Store struct {
 }
 
 // save store
-func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
+func (ss *Store) Save(ctx *fasthttp.RequestCtx) error {
 
-	b, err := provider.config.SerializeFunc(ms.GetAll())
+	b, err := provider.config.SerializeFunc(ss.GetAll())
 	if err != nil {
 		return err
 	}
-	session, err := provider.sessionDao.getSessionBySessionId(ms.GetSessionId())
+	session, err := provider.sessionDao.getSessionBySessionId(ss.GetSessionId())
 	if err != nil || len(session) == 0 {
 		return nil
 	}
-	_, err = provider.sessionDao.updateBySessionId(ms.GetSessionId(), string(b), time.Now().Unix())
+	_, err = provider.sessionDao.updateBySessionId(ss.GetSessionId(), string(b), time.Now().Unix())
 	return err
 }

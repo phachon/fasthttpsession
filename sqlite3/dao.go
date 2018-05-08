@@ -44,8 +44,8 @@ func (dao *sessionDao) countSessions() int {
 
 // update session by sessionId
 func (dao *sessionDao) updateBySessionId(sessionId string, contents string, lastActiveTime int64) (int64, error) {
-	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=?", dao.tableName)
-	return dao.execute(sqlStr, contents, lastActiveTime)
+	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=? WHERE session_id=?", dao.tableName)
+	return dao.execute(sqlStr, contents, lastActiveTime, sessionId)
 }
 
 // delete session by sessionId

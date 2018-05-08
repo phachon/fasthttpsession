@@ -24,6 +24,20 @@ type sessionDao struct {
 	tableName string
 }
 
+// count sessionId
+func (dao *sessionDao) sessionIdIsExists(sessionId string) bool {
+	sqlStr := fmt.Sprintf("SELECT count(*) as total FROM %s WHERE session_id=?", dao.tableName)
+	res, err := dao.getRow(sqlStr, sessionId)
+	if err != nil {
+		return false
+	}
+	total, _ := strconv.Atoi(string(res["total"]))
+	if total == 0 {
+		return false
+	}
+	return true
+}
+
 // get session by sessionId
 func (dao *sessionDao) getSessionBySessionId(sessionId string) (session map[string][]byte, err error) {
 
@@ -44,8 +58,8 @@ func (dao *sessionDao) countSessions() int {
 
 // update session by sessionId
 func (dao *sessionDao) updateBySessionId(sessionId string, contents string, lastActiveTime int64) (int64, error) {
-	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=?", dao.tableName)
-	return dao.execute(sqlStr, contents, lastActiveTime)
+	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=? WHERE session_id=?", dao.tableName)
+	return dao.execute(sqlStr, contents, lastActiveTime, sessionId)
 }
 
 // delete session by sessionId

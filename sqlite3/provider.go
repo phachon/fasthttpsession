@@ -9,10 +9,8 @@ import (
 
 // session sqlite3 provider
 
-// session Table structure
-// #-- ----------------------------------------------------------
-// #-- session table
-// #-- ----------------------------------------------------------
+//  session Table structure
+//
 //  DROP TABLE IF EXISTS `session`;
 //  CREATE TABLE `session` (
 //    `session_id` varchar(64) NOT NULL DEFAULT '',
@@ -123,7 +121,7 @@ func (sp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	if err != nil {
 		return nil, err
 	}
-	if (len(sessionValue) == 0) || (len(sessionValue["contents"]) == 0){
+	if len(sessionValue) == 0 {
 		// old sessionId not exists, insert new sessionId
 		_, err := sp.sessionDao.insert(sessionId, "", time.Now().Unix())
 		if err != nil {
@@ -137,6 +135,7 @@ func (sp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	if err != nil {
 		return nil, err
 	}
+	// insert new session
 	_, err = sp.sessionDao.insert(sessionId, string(sessionValue["contents"]), time.Now().Unix())
 	if err != nil {
 		return nil, err
