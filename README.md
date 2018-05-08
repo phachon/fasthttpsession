@@ -1,4 +1,4 @@
-![logo](./logo.png)
+[![logo](./logo.png)](https://github.com/phachon/fasthttpsession)
 
 [![build](https://img.shields.io/shippable/5444c5ecb904a4b21567b0ff.svg)](https://travis-ci.org/phachon/fasthttpsession)
 [![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/phachon/fasthttpsession)
@@ -8,10 +8,11 @@
 [![powered_by](https://img.shields.io/badge/powered_by-Go-3362c2.svg?style=flat)]()
 [![platforms](https://img.shields.io/badge/platform-All-yellow.svg?style=flat)]()
 
-# Description
 fasthttpsession is a fast and powerful session package for [fasthttp](https://github.com/valyala/fasthttp) servers
 
-fasthttpsession is currently support providers:
+# Description
+
+fasthttpsession is a session manager for Go. It only supports [fasthttp](https://github.com/valyala/fasthttp), currently support providers:
 
 - file
 - memcache
