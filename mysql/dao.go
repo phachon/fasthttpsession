@@ -50,7 +50,7 @@ func (dao *sessionDao) updateBySessionId(sessionId string, contents string, last
 
 // delete session by sessionId
 func (dao *sessionDao) deleteBySessionId(sessionId string) (int64, error) {
-	sqlStr := fmt.Sprintf("DELETE %s WHERE session_id=?", dao.tableName)
+	sqlStr := fmt.Sprintf("DELETE FROM %s WHERE session_id=?", dao.tableName)
 	return dao.execute(sqlStr, sessionId)
 }
 
@@ -127,12 +127,9 @@ func (dao *sessionDao) execute(sql string, args ...interface{}) (int64, error) {
 		return 0, err
 	}
 	defer stmt.Close()
-
 	rows, err := stmt.Exec(args...)
 	if err != nil {
-		fmt.Println(err.Error())
 		return 0, err
 	}
-	fmt.Println("OK")
 	return rows.RowsAffected()
 }

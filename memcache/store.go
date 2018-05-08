@@ -29,7 +29,7 @@ type Store struct {
 // save store
 func (mcs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
-	value, err := utils.GobEncode(mcs.GetAll())
+	value, err := provider.config.SerializeFunc(mcs.GetAll())
 	if err != nil {
 		return err
 	}

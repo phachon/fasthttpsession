@@ -12,8 +12,8 @@ import (
 const ProviderName = "memcache"
 
 var (
-	utils = fasthttpsession.NewUtils()
 	provider = NewProvider()
+	encrypt = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
@@ -41,11 +41,19 @@ func (mcp *Provider) Init(lifeTime int64, memCacheConfig fasthttpsession.Provide
 	rc := vc.Interface().(*Config)
 	mcp.config = rc
 
+	// config check
 	if len(mcp.config.ServerList) == 0 {
 		return errors.New("session memcache provider init error, config ServerList not empty")
 	}
 	if mcp.config.MaxIdle <= 0 {
 		return errors.New("session memcache provider init error, config MaxIdle must be more than 0")
+	}
+	// init config serialize func
+	if mcp.config.SerializeFunc == nil {
+		mcp.config.SerializeFunc = encrypt.GobEncode
+	}
+	if mcp.config.UnSerializeFunc == nil {
+		mcp.config.UnSerializeFunc = encrypt.GobDecode
 	}
 	// create memcache client
 	mcp.memCacheClient = memcache.New(mcp.config.ServerList...)
@@ -80,7 +88,7 @@ func (mcp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, 
 		return NewMemCacheStore(sessionId), nil
 	}
 
-	data, err := utils.GobDecode(item.Value)
+	data, err := mcp.config.UnSerializeFunc(item.Value)
 	if err != nil {
 		return nil, err
 	}

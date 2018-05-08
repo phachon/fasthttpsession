@@ -47,6 +47,12 @@ type Config struct {
 
 	// mysql max open idle
 	SetMaxOpenConn int
+
+	// session value serialize func
+	SerializeFunc func(data map[string]interface{}) ([]byte, error)
+
+	// session value unSerialize func
+	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
 func NewConfigWith(host string, port int, user, pass, dbName, tableName string) (cf *Config) {

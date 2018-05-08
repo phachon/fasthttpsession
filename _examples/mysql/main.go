@@ -33,7 +33,7 @@ var session = fasthttpsession.NewSession(fasthttpsession.NewDefaultConfig())
 func main()  {
 
 	// You must set up provider before use
-	err := session.SetProvider("mysql", mysql.NewConfigWith("127.0.0.1", 3306, "root", "123456", "test", "session"))
+	err := session.SetProvider("mysql", mysql.NewConfigWith("127.0.0.1", 3306, "root", "admin", "test", "session"))
 
 	if err != nil {
 		log.Println(err.Error())

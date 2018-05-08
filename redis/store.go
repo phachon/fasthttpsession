@@ -28,7 +28,7 @@ type Store struct {
 // save store
 func (rs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
-	b, err := utils.GobEncode(rs.GetAll())
+	b, err := provider.config.SerializeFunc(rs.GetAll())
 	if err != nil {
 		return err
 	}

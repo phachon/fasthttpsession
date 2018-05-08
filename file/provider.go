@@ -19,7 +19,7 @@ const ProviderName = "file"
 
 var (
 	fileProvider = NewProvider()
-	utils = fasthttpsession.NewUtils()
+	encrypt = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
@@ -51,10 +51,10 @@ func (fp *Provider) Init(lifeTime int64, fileConfig fasthttpsession.ProviderConf
 		return errors.New("session file provider init error, config savePath not empty")
 	}
 	if fp.config.SerializeFunc == nil {
-		fp.config.SerializeFunc = utils.GobEncode
+		fp.config.SerializeFunc = encrypt.GobEncode
 	}
 	if fp.config.UnSerializeFunc == nil {
-		fp.config.UnSerializeFunc = utils.GobDecode
+		fp.config.UnSerializeFunc = encrypt.GobDecode
 	}
 
 	fp.maxLifeTime = lifeTime

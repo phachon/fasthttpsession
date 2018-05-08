@@ -29,9 +29,13 @@ type Store struct {
 // save store
 func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
 
-	b, err := utils.GobEncode(ms.GetAll())
+	b, err := provider.config.SerializeFunc(ms.GetAll())
 	if err != nil {
 		return err
+	}
+	session, err := provider.sessionDao.getSessionBySessionId(ms.GetSessionId())
+	if err != nil || len(session) == 0 {
+		return nil
 	}
 	_, err = provider.sessionDao.updateBySessionId(ms.GetSessionId(), string(b), time.Now().Unix())
 	return err

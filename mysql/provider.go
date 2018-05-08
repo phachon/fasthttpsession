@@ -15,19 +15,19 @@ import (
 // #-- ----------------------------------------------------------
 //DROP TABLE IF EXISTS `session`;
 //CREATE TABLE `session` (
-// `session_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session id',
-// `contents` varchar(1000) NOT NULL DEFAULT '' COMMENT 'Session data',
-// `last_active` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last active time',
-// PRIMARY KEY (`session_id`),
-// KEY `last_active` (`last_active`)
+//`session_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'Session id',
+//`contents` TEXT NOT NULL COMMENT 'Session data',
+//`last_active` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last active time',
+//PRIMARY KEY (`session_id`),
+//KEY `last_active` (`last_active`)
 //) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session table';
 //
 
 const ProviderName = "mysql"
 
 var (
-	utils = fasthttpsession.NewUtils()
 	provider = NewProvider()
+	encrypt = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
@@ -56,13 +56,20 @@ func (mp *Provider) Init(lifeTime int64, mysqlConfig fasthttpsession.ProviderCon
 	mp.config = rc
 	mp.maxLifeTime = lifeTime
 
+	// check config
 	if mp.config.Host == "" {
 		return errors.New("session mysql provider init error, config Host not empty")
 	}
 	if mp.config.Port == 0 {
 		return errors.New("session mysql provider init error, config Port not empty")
 	}
-
+	// init config serialize func
+	if mp.config.SerializeFunc == nil {
+		mp.config.SerializeFunc = encrypt.Base64Encode
+	}
+	if mp.config.UnSerializeFunc == nil {
+		mp.config.UnSerializeFunc = encrypt.Base64Decode
+	}
 	// init sessionDao
 	sessionDao, err := newSessionDao(mp.config.getMysqlDSN(), mp.config.TableName)
 	if err != nil {
@@ -102,7 +109,7 @@ func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		return NewMysqlStore(sessionId), nil
 	}
 
-	data, err := utils.GobDecode(sessionValue["contents"])
+	data, err := mp.config.UnSerializeFunc(sessionValue["contents"])
 	if err != nil {
 		return nil, err
 	}

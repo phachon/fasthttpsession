@@ -12,8 +12,8 @@ import (
 const ProviderName = "redis"
 
 var (
-	utils = fasthttpsession.NewUtils()
 	provider = NewProvider()
+	encrypt = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
@@ -42,6 +42,7 @@ func (rp *Provider) Init(lifeTime int64, redisConfig fasthttpsession.ProviderCon
 	rp.config = rc
 	rp.maxLifeTime = lifeTime
 
+	// config check
 	if rp.config.Host == "" {
 		return errors.New("session redis provider init error, config Host not empty")
 	}
@@ -53,6 +54,13 @@ func (rp *Provider) Init(lifeTime int64, redisConfig fasthttpsession.ProviderCon
 	}
 	if rp.config.IdleTimeout <= 0 {
 		return errors.New("session redis provider init error, config IdleTimeout must be more than 0")
+	}
+	// init config serialize func
+	if rp.config.SerializeFunc == nil {
+		rp.config.SerializeFunc = encrypt.GobEncode
+	}
+	if rp.config.UnSerializeFunc == nil {
+		rp.config.UnSerializeFunc = encrypt.GobDecode
 	}
 	// create redis conn pool
 	rp.redisPool = newRedisPool(rp.config)
@@ -91,7 +99,7 @@ func (rp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		return NewRedisStore(sessionId), nil
 	}
 
-	data, err := utils.GobDecode(reply)
+	data, err := rp.config.UnSerializeFunc(reply)
 	if err != nil {
 		return nil, err
 	}
