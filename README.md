@@ -23,7 +23,7 @@ fasthttpsession is currently support providers:
 
 # Features
 
-- Focus on the design of the code architecture and expansion
+- Focus on the design of the code architecture and expansion.
 - Provide full session storage.
 - Convenient switching of session storage.
 - Customizable data serialization.
@@ -38,8 +38,9 @@ $ go get -u github.com/phachon/fasthttpsession
 $ go get ./...
 ```
 
-# Quick Start
+# Used
 
+## Quick Start
 ```Golang
 
 // fasthttpsession use memory provider
@@ -89,7 +90,59 @@ func requestHandle(ctx *fasthttp.RequestCtx) {
 }
 ```
 
+## Custom configuration
+
+If you don't want to use the default configuration, please use the following struct custom.
+```Golang
+type Config struct {
+
+	// cookie name
+	CookieName string
+	
+	// cookie domain
+	Domain string
+	
+	// If you want to delete the cookie when the browser closes, set it to -1.
+	//
+	//  0 means no expire, (24 years)
+	// -1 means when browser closes
+	// >0 is the time.Duration which the session cookies should expire.
+	Expires time.Duration
+	
+	// gc life time(s)
+	GCLifetime int64
+	
+	// session life time(s)
+	SessionLifetime int64
+	
+	// set whether to pass this bar cookie only through HTTPS
+	Secure bool
+	
+	// sessionId is in url query
+	SessionIdInURLQuery bool
+	
+	// sessionName in url query
+	SessionNameInUrlQuery string
+	
+	// sessionId is in http header
+	SessionIdInHttpHeader bool
+	
+	// sessionName in http header
+	SessionNameInHttpHeader string
+	
+	// SessionIdGeneratorFunc should returns a random session id.
+	SessionIdGeneratorFunc func() string
+	
+	// Encode the cookie value if not nil.
+	EncodeFunc func(cookieValue string) (string, error)
+	
+	// Decode the cookie value if not nil.
+	DecodeFunc func(cookieValue string) (string, error)
+}
+```
+
 # Documents
+
 Document address: [http://godoc.org/github.com/phachon/fasthttpsession](http://godoc.org/github.com/phachon/fasthttpsession)
 
 # Example
