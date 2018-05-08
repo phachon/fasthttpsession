@@ -68,7 +68,7 @@ func (mcp *Provider) NeedGC() bool {
 }
 
 // session memcache provider not need garbage collection
-func (mcp *Provider) GC(sessionLifetime int64) {}
+func (mcp *Provider) GC() {}
 
 
 // read session store by session id

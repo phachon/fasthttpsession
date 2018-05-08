@@ -71,12 +71,12 @@ func (fp *Provider) NeedGC() bool {
 }
 
 // session garbage collection
-func (fp *Provider) GC(sessionLifetime int64) {
+func (fp *Provider) GC() {
 
 	files, err := fp.file.walkDir(fp.config.SavePath, fp.config.Suffix)
 	if err == nil {
 		for _, file := range files {
-			if time.Now().Unix() >= (sessionLifetime + fp.file.getModifyTime(file)) {
+			if time.Now().Unix() >= (fp.maxLifeTime + fp.file.getModifyTime(file)) {
 				fp.lock.Lock()
 				filename := filepath.Base(file)
 				sessionId := strings.TrimRight(filename, fp.config.Suffix)

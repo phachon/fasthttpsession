@@ -81,7 +81,7 @@ func (rp *Provider) NeedGC() bool {
 }
 
 // session redis provider not need garbage collection
-func (rp *Provider) GC(sessionLifetime int64) {}
+func (rp *Provider) GC() {}
 
 
 // read session store by session id

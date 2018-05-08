@@ -45,9 +45,9 @@ func (mp *Provider) NeedGC() bool {
 }
 
 // session garbage collection
-func (mp *Provider) GC(sessionLifetime int64) {
+func (mp *Provider) GC() {
 	for sessionId, value := range mp.values.GetAll() {
-		if time.Now().Unix() >= value.(*Store).lastActiveTime + sessionLifetime {
+		if time.Now().Unix() >= value.(*Store).lastActiveTime + mp.maxLifeTime {
 			// destroy session sessionId
 			mp.Destroy(sessionId)
 			return

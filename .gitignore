@@ -16,3 +16,4 @@
 .idea/
 *.exe
 .session/
+*.db

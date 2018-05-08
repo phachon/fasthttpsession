@@ -86,7 +86,7 @@ func (s *Session) gc() {
 	for {
 		select {
 		case <-time.After(time.Duration(s.config.GCLifetime) * time.Second):
-			s.provider.GC(s.config.SessionLifetime)
+			s.provider.GC()
 		}
 	}
 }

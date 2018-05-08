@@ -84,12 +84,13 @@ func (mp *Provider) Init(lifeTime int64, mysqlConfig fasthttpsession.ProviderCon
 
 // not need gc
 func (mp *Provider) NeedGC() bool {
-	return false
+	return true
 }
 
 // session mysql provider not need garbage collection
-func (mp *Provider) GC(sessionLifetime int64) {}
-
+func (mp *Provider) GC() {
+	mp.sessionDao.deleteSessionByMaxLifeTime(mp.maxLifeTime)
+}
 
 // read session store by session id
 func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
@@ -134,7 +135,7 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	}
 
 	// delete old session
-	_, err = mp.sessionDao.deleteBySessionId(sessionId)
+	_, err = mp.sessionDao.deleteBySessionId(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
