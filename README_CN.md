@@ -8,13 +8,13 @@
 [![powered_by](https://img.shields.io/badge/powered_by-Go-3362c2.svg?style=flat)]()
 [![platforms](https://img.shields.io/badge/platform-All-yellow.svg?style=flat)]()
 
-fasthttpsession is a fast and powerful session package for [fasthttp](https://github.com/valyala/fasthttp) servers
+fasthttpsession 是一个快速且强大的 [fasthttp](https://github.com/valyala/fasthttp) session 管理包
 
-[中文文档](./README_CN.md)
+[English Document](./README.md)
 
-# Description
+# 描述
 
-fasthttpsession is a session manager for Go. It only supports [fasthttp](https://github.com/valyala/fasthttp), currently support providers:
+fasthttpsession 是 Go 实现的一个 session 管理器。它只能用于 [fasthttp](https://github.com/valyala/fasthttp) 框架, 目前支持的 session 存储如下:
 
 - file
 - memcache
@@ -24,26 +24,26 @@ fasthttpsession is a session manager for Go. It only supports [fasthttp](https:/
 - redis
 - sqlite3
 
-# Features
+# 功能
 
-- Focus on the design of the code architecture and expansion.
-- Provide full session storage.
-- Convenient switching of session storage.
-- Customizable data serialization.
-- Implement concurrent map(ccmap.go) to improve performance.
+- 关注代码架构和扩展的设计。
+- 提供全面的 session 存储。
+- 方便的 session 存储切换。
+- 可自由定制数据序列化函数。
+- 实现了并发 map(ccmap.go) 去提高性能。
 
-# Install
+# 安装
 
-The only requirement is the Go Programming Language, at least v1.7
+要求是 Go 至少是 v1.7。
 
 ```shell
 $ go get -u github.com/phachon/fasthttpsession
 $ go get ./...
 ```
 
-# Used
+# 使用
 
-## Quick Start
+## 快速开始
 ```Golang
 
 // fasthttpsession use memory provider
@@ -56,11 +56,11 @@ import (
 	"os"
 )
 
-// default config
+// 默认的 session 全局配置
 var session = fasthttpsession.NewSession(fasthttpsession.NewDefaultConfig())
 
 func main()  {
-	// you must set up provider before use
+	// 必须在使用之前指定 session 的存储
 	err := session.SetProvider("memory", &memory.Config{})
 	if err != nil {
 		log.Println(err.Error())
@@ -84,7 +84,7 @@ func requestHandle(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString(err.Error())
 		return
 	}
-	// must defer sessionStore.save(ctx)
+	// 必须 defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
 	sessionStore.Set("name", "fasthttpsession")
@@ -93,9 +93,9 @@ func requestHandle(ctx *fasthttp.RequestCtx) {
 }
 ```
 
-## Custom configuration
+## 自定义配置
 
-If you don't want to use the default configuration, please use the following struct custom.
+如果您不想使用默认配置，请使用以下结构自定义你想要的配置。
 ```Golang
 type Config struct {
 
@@ -144,23 +144,23 @@ type Config struct {
 }
 ```
 
-Different session provider config, please look at the Config.go the provider name directory.
+不同的 session 存储提供有着不同的配置，请查看存储名称目录下的 Config.go
 
-# Documents
+# 文档
 
-Document address: [http://godoc.org/github.com/phachon/fasthttpsession](http://godoc.org/github.com/phachon/fasthttpsession)
+文档地址: [http://godoc.org/github.com/phachon/fasthttpsession](http://godoc.org/github.com/phachon/fasthttpsession)
 
-# Example
+# 示例
 
-[Some Example](_examples)
+[一些例子](_examples)
 
-## Feedback
+## 反馈
 
-- If you like the project, please [Start](https://github.com/phachon/fasthttpsession/stargazers).
-- If you have any problems in the process of use, welcome submit [Issue](https://github.com/phachon/fasthttpsession/issues).
-- If you find and solve bug, welcome submit [Pull Request](https://github.com/phachon/fasthttpsession/pulls).
-- If you want to expand session provider, welcome [Fork](https://github.com/phachon/fasthttpsession/network/members) and merge this rep.
-- If you want to make a friend, welcome send email to [phachon@163.com](mailto:phachon@163.com).
+- 如果您喜欢该项目，请 [Start](https://github.com/phachon/fasthttpsession/stargazers).
+- 如果在使用过程中有任何问题， 请提交 [Issue](https://github.com/phachon/fasthttpsession/issues).
+- 如果您发现并解决了bug，请提交 [Pull Request](https://github.com/phachon/fasthttpsession/pulls).
+- 如果您想扩展 session 存储，欢迎 [Fork](https://github.com/phachon/fasthttpsession/network/members) and merge this rep.
+- 如果你想交个朋友，欢迎发邮件给 [phachon@163.com](mailto:phachon@163.com).
 
 ## License
 
