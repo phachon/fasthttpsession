@@ -37,6 +37,9 @@ func (f *file) getContent(filename string) (data []byte, err error) {
 	defer fi.Close()
 
 	fd, err := ioutil.ReadAll(fi)
+	if err != nil {
+		return
+	}
 	return fd, nil
 }
 

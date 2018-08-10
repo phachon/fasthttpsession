@@ -97,8 +97,7 @@ func (dao *sessionDao) getRows(sql string, args ...interface{}) (results []map[s
 	}
 	defer rows.Close()
 
-	cols := []string{}
-	cols, err = rows.Columns()
+	cols, err := rows.Columns()
 	if err != nil {
 		return
 	}
