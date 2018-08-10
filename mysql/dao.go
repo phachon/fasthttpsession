@@ -1,11 +1,12 @@
 package mysql
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
+	"fmt"
 	"strconv"
 	"time"
-	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func newSessionDao(dsn string, tableName string) (*sessionDao, error) {

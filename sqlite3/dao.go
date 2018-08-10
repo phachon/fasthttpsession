@@ -1,11 +1,12 @@
 package sqlite3
 
 import (
-	_ "github.com/mattn/go-sqlite3"
 	"database/sql"
+	"fmt"
 	"strconv"
 	"time"
-	"fmt"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func newSessionDao(dsn string, tableName string) (*sessionDao, error) {
@@ -15,13 +16,13 @@ func newSessionDao(dsn string, tableName string) (*sessionDao, error) {
 	}
 	return &sessionDao{
 		sqlite3Conn: conn,
-		tableName: tableName,
+		tableName:   tableName,
 	}, nil
 }
 
 type sessionDao struct {
 	sqlite3Conn *sql.DB
-	tableName string
+	tableName   string
 }
 
 // get session by sessionId

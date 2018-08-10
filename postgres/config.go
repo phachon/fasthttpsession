@@ -57,19 +57,19 @@ func NewConfigWith(host string, port int64, username string, password string, db
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host: "127.0.0.1",
-		Port: 5432,
-		Username: "root",
-		Password: "",
-		ConnTimeout:  3000,
-		Database: "test",
-		TableName: "test",
+		Host:           "127.0.0.1",
+		Port:           5432,
+		Username:       "root",
+		Password:       "",
+		ConnTimeout:    3000,
+		Database:       "test",
+		TableName:      "test",
 		SetMaxOpenConn: 500,
 		SetMaxIdleConn: 50,
 	}
 }
 
-func (pc *Config)getPostgresDSN() string {
+func (pc *Config) getPostgresDSN() string {
 	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?connect_timeout=%d&sslmode=disable",
 		url.QueryEscape(pc.Username),
 		pc.Password,

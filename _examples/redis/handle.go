@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/valyala/fasthttp"
 	"fmt"
+
 	"github.com/phachon/fasthttpsession"
+	"github.com/valyala/fasthttp"
 )
 
 // request router
@@ -35,7 +36,7 @@ func requestRouter(ctx *fasthttp.RequestCtx) {
 // index handler
 func indexHandler(ctx *fasthttp.RequestCtx) {
 
-	html := "<h2>Welcome to use fasthttpsession "+fasthttpsession.Version()+", you should request to the: </h2>"
+	html := "<h2>Welcome to use fasthttpsession " + fasthttpsession.Version() + ", you should request to the: </h2>"
 
 	html += `> <a href="/">/</a><br>`
 	html += `> <a href="/set">set</a><br>`
@@ -166,7 +167,7 @@ func sessionIdHandle(ctx *fasthttp.RequestCtx) {
 	defer sessionStore.Save(ctx)
 
 	sessionId := sessionStore.GetSessionId()
-	ctx.SetBodyString("fasthttpsession sessionId: "+sessionId)
+	ctx.SetBodyString("fasthttpsession sessionId: " + sessionId)
 }
 
 // regenerate handler
@@ -185,5 +186,5 @@ func regenerateHandle(ctx *fasthttp.RequestCtx) {
 
 	sessionId := sessionStore.GetSessionId()
 
-	ctx.SetBodyString("fasthttpsession regenerate sessionId: "+sessionId)
+	ctx.SetBodyString("fasthttpsession regenerate sessionId: " + sessionId)
 }

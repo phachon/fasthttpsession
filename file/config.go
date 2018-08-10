@@ -8,7 +8,7 @@ type Config struct {
 	SavePath string
 
 	// session file suffix
-	Suffix   string
+	Suffix string
 
 	// session value serialize func
 	SerializeFunc func(data map[string]interface{}) ([]byte, error)

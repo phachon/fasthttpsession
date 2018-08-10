@@ -1,16 +1,17 @@
 package file
 
 import (
-	"github.com/phachon/fasthttpsession"
 	"errors"
-	"reflect"
+	"io/ioutil"
 	"os"
 	"path"
-	"time"
-	"sync"
 	"path/filepath"
-	"io/ioutil"
+	"reflect"
 	"strings"
+	"sync"
+	"time"
+
+	"github.com/phachon/fasthttpsession"
 )
 
 // session file provider
@@ -19,20 +20,20 @@ const ProviderName = "file"
 
 var (
 	fileProvider = NewProvider()
-	encrypt = fasthttpsession.NewEncrypt()
+	encrypt      = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
-	lock sync.RWMutex
-	file *file
-	config *Config
+	lock        sync.RWMutex
+	file        *file
+	config      *Config
 	maxLifeTime int64
 }
 
 // new file provider
 func NewProvider() *Provider {
 	return &Provider{
-		file: &file{},
+		file:   &file{},
 		config: &Config{},
 	}
 }
@@ -124,7 +125,6 @@ func (fp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 	return store, nil
 }
 
-
 // regenerate session
 func (fp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
 
@@ -179,7 +179,7 @@ func (fp *Provider) Destroy(sessionId string) error {
 	fp.lock.Lock()
 	defer fp.lock.Unlock()
 
-	_, _, fullFileName  := fp.getSessionFile(sessionId)
+	_, _, fullFileName := fp.getSessionFile(sessionId)
 	if fp.file.pathIsExists(fullFileName) {
 		fp.removeSessionFile(sessionId)
 	}
@@ -209,7 +209,7 @@ func (fp *Provider) getSessionFile(sessionId string) (string, string, string) {
 // remove session file
 func (fp *Provider) removeSessionFile(sessionId string) {
 
-	filePath, _, fullFileName  := fp.getSessionFile(sessionId)
+	filePath, _, fullFileName := fp.getSessionFile(sessionId)
 	os.Remove(fullFileName)
 
 	// remove empty dir
@@ -225,6 +225,6 @@ func (fp *Provider) removeSessionFile(sessionId string) {
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, fileProvider)
 }

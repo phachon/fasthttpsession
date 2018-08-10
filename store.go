@@ -17,8 +17,8 @@ type SessionStore interface {
 }
 
 type Store struct {
-	sessionId       string
-	data            *CCMap
+	sessionId string
+	data      *CCMap
 }
 
 // init store data and sessionId

@@ -1,10 +1,11 @@
 package sqlite3
 
 import (
-	"github.com/phachon/fasthttpsession"
 	"errors"
 	"reflect"
 	"time"
+
+	"github.com/phachon/fasthttpsession"
 )
 
 // session sqlite3 provider
@@ -25,21 +26,21 @@ const ProviderName = "sqlite3"
 
 var (
 	provider = NewProvider()
-	encrypt = fasthttpsession.NewEncrypt()
+	encrypt  = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
-	config *Config
-	values *fasthttpsession.CCMap
-	sessionDao *sessionDao
+	config      *Config
+	values      *fasthttpsession.CCMap
+	sessionDao  *sessionDao
 	maxLifeTime int64
 }
 
 // new sqlite3 provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{},
-		values: fasthttpsession.NewDefaultCCMap(),
+		config:     &Config{},
+		values:     fasthttpsession.NewDefaultCCMap(),
 		sessionDao: &sessionDao{},
 	}
 }
@@ -86,7 +87,6 @@ func (sp *Provider) NeedGC() bool {
 func (sp *Provider) GC() {
 	sp.sessionDao.deleteSessionByMaxLifeTime(sp.maxLifeTime)
 }
-
 
 // read session store by session id
 func (sp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
@@ -156,6 +156,6 @@ func (sp *Provider) Count() int {
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, provider)
 }

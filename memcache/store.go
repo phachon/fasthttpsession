@@ -1,9 +1,9 @@
 package memcache
 
 import (
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
-	"github.com/bradfitz/gomemcache/memcache"
 )
 
 // session memCache store
@@ -35,8 +35,8 @@ func (mcs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	}
 
 	return provider.memCacheClient.Set(&memcache.Item{
-		Key: provider.getMemCacheSessionKey(mcs.GetSessionId()),
-		Value: value,
+		Key:        provider.getMemCacheSessionKey(mcs.GetSessionId()),
+		Value:      value,
 		Expiration: int32(provider.maxLifeTime),
 	})
 }

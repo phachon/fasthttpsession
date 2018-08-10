@@ -1,11 +1,12 @@
 package file
 
 import (
-	"github.com/phachon/fasthttpsession"
-	"github.com/valyala/fasthttp"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/phachon/fasthttpsession"
+	"github.com/valyala/fasthttp"
 )
 
 type Store struct {

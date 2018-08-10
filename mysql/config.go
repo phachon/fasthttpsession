@@ -22,10 +22,10 @@ type Config struct {
 	Password string
 
 	// mysql conn charset
-	Charset  string
+	Charset string
 
 	// mysql Collate
-	Collate  string
+	Collate string
 
 	// database name
 	Database string
@@ -68,17 +68,17 @@ func NewConfigWith(host string, port int, user, pass, dbName, tableName string) 
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		Charset: "utf8",
-		Collate: "utf8_general_ci",
-		Database: "test",
-		TableName: "test",
-		Host: "127.0.0.1",
-		Port:  3306,
-		Username: "root",
-		Password: "",
-		Timeout:  3000,
-		ReadTimeout: 5000,
-		WriteTimeout: 5000,
+		Charset:        "utf8",
+		Collate:        "utf8_general_ci",
+		Database:       "test",
+		TableName:      "test",
+		Host:           "127.0.0.1",
+		Port:           3306,
+		Username:       "root",
+		Password:       "",
+		Timeout:        3000,
+		ReadTimeout:    5000,
+		WriteTimeout:   5000,
 		SetMaxOpenConn: 500,
 		SetMaxIdleConn: 50,
 	}

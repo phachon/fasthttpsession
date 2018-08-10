@@ -1,10 +1,11 @@
 package memory
 
 import (
+	"sync"
+	"time"
+
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
-	"time"
-	"sync"
 )
 
 // session memory store
@@ -25,8 +26,8 @@ func NewMemoryStoreData(sessionId string, data map[string]interface{}) *Store {
 
 type Store struct {
 	fasthttpsession.Store
-	lock            sync.RWMutex
-	lastActiveTime  int64
+	lock           sync.RWMutex
+	lastActiveTime int64
 }
 
 // save store

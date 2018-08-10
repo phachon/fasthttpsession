@@ -3,11 +3,12 @@ package main
 // fasthttpsession redis provider example
 
 import (
-	"github.com/phachon/fasthttpsession"
-	"github.com/valyala/fasthttp"
 	"log"
 	"os"
+
+	"github.com/phachon/fasthttpsession"
 	"github.com/phachon/fasthttpsession/sqlite3"
+	"github.com/valyala/fasthttp"
 )
 
 // default config
@@ -30,7 +31,7 @@ var session = fasthttpsession.NewSession(fasthttpsession.NewDefaultConfig())
 //	DecodeFunc: func(cookieValue string) (string, error) {return "", nil},
 //})
 
-func main()  {
+func main() {
 
 	// You must set up provider before use
 	err := session.SetProvider("sqlite3", sqlite3.NewConfigWith("test.db", "session"))
@@ -40,10 +41,10 @@ func main()  {
 		os.Exit(1)
 	}
 	addr := ":8086"
-	log.Println("fasthttpsession redis example server listen: "+addr)
+	log.Println("fasthttpsession redis example server listen: " + addr)
 	// Fasthttp start listen serve
 	err = fasthttp.ListenAndServe(addr, requestRouter)
 	if err != nil {
-		log.Println("listen server error :"+err.Error())
+		log.Println("listen server error :" + err.Error())
 	}
 }

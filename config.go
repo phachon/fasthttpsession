@@ -1,12 +1,12 @@
 package fasthttpsession
 
 import (
-	"github.com/satori/go.uuid"
 	"time"
+
+	"github.com/satori/go.uuid"
 )
 
 var (
-
 	defaultCookieName = "fasthttpsessionid"
 
 	defaultExpires = time.Hour * 2
@@ -17,15 +17,15 @@ var (
 // new default config
 func NewDefaultConfig() *Config {
 	config := &Config{
-		CookieName: defaultCookieName,
-		Domain: "",
-		Expires: defaultExpires,
-		GCLifetime: defaultGCLifetime,
-		SessionLifetime: 60,
-		Secure: true,
-		SessionIdInURLQuery: false,
-		SessionNameInUrlQuery: "",
-		SessionIdInHttpHeader: false,
+		CookieName:              defaultCookieName,
+		Domain:                  "",
+		Expires:                 defaultExpires,
+		GCLifetime:              defaultGCLifetime,
+		SessionLifetime:         60,
+		Secure:                  true,
+		SessionIdInURLQuery:     false,
+		SessionNameInUrlQuery:   "",
+		SessionIdInHttpHeader:   false,
 		SessionNameInHttpHeader: "",
 	}
 
@@ -79,7 +79,6 @@ type Config struct {
 
 	// Decode the cookie value if not nil.
 	DecodeFunc func(cookieValue string) (string, error)
-
 }
 
 // sessionId generator
