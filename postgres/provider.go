@@ -1,10 +1,11 @@
 package postgres
 
 import (
-	"github.com/phachon/fasthttpsession"
 	"errors"
 	"reflect"
 	"time"
+
+	"github.com/phachon/fasthttpsession"
 )
 
 // session postgres provider
@@ -25,21 +26,21 @@ const ProviderName = "postgres"
 
 var (
 	provider = NewProvider()
-	encrypt = fasthttpsession.NewEncrypt()
+	encrypt  = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
-	config *Config
-	values *fasthttpsession.CCMap
-	sessionDao *sessionDao
+	config      *Config
+	values      *fasthttpsession.CCMap
+	sessionDao  *sessionDao
 	maxLifeTime int64
 }
 
 // new postgres provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{},
-		values: fasthttpsession.NewDefaultCCMap(),
+		config:     &Config{},
+		values:     fasthttpsession.NewDefaultCCMap(),
 		sessionDao: &sessionDao{},
 	}
 }
@@ -89,7 +90,6 @@ func (pp *Provider) NeedGC() bool {
 func (pp *Provider) GC() {
 	pp.sessionDao.deleteSessionByMaxLifeTime(pp.maxLifeTime)
 }
-
 
 // read session store by session id
 func (pp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
@@ -159,6 +159,6 @@ func (pp *Provider) Count() int {
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, provider)
 }

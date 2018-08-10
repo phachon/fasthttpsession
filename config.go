@@ -93,11 +93,7 @@ func (c *Config) SessionIdGenerator() string {
 
 // default sessionId generator => uuid
 func (c *Config) defaultSessionIdGenerator() string {
-	id, err := uuid.NewV4()
-	if err != nil {
-		return ""
-	}
-	return id.String()
+	return uuid.NewV4().String()
 }
 
 // encode cookie value
