@@ -80,8 +80,8 @@ func (fp *Provider) GC() {
 			if time.Now().Unix() >= (fp.maxLifeTime + fp.file.getModifyTime(file)) {
 				fp.lock.Lock()
 				filename := filepath.Base(file)
-				sessionId := strings.TrimRight(filename, fp.config.Suffix)
-				fp.removeSessionFile(sessionId)
+				sessionID := strings.TrimRight(filename, fp.config.Suffix)
+				fp.removeSessionFile(sessionID)
 				fp.lock.Unlock()
 			}
 		}
@@ -89,13 +89,13 @@ func (fp *Provider) GC() {
 }
 
 // read session store by session id
-func (fp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+func (fp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
 	fp.lock.Lock()
 	defer fp.lock.Unlock()
 	store := &Store{}
 
-	filePath, _, fullFileName := fp.getSessionFile(sessionId)
+	filePath, _, fullFileName := fp.getSessionFile(sessionID)
 
 	// file is exist
 	if fp.file.pathIsExists(fullFileName) {
@@ -109,7 +109,7 @@ func (fp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		if err != nil {
 			return store, err
 		}
-		store.Init(sessionId, value)
+		store.Init(sessionID, value)
 
 		return store, nil
 	}
@@ -120,23 +120,23 @@ func (fp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 	if err != nil {
 		return store, err
 	}
-	store.Init(sessionId, map[string]interface{}{})
+	store.Init(sessionID, map[string]interface{}{})
 
 	return store, nil
 }
 
 // regenerate session
-func (fp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (fp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	fp.lock.Lock()
 	defer fp.lock.Unlock()
 	store := &Store{}
 
 	_, _, oldFullFileName := fp.getSessionFile(oldSessionId)
-	filePath, _, fullFileName := fp.getSessionFile(sessionId)
+	filePath, _, fullFileName := fp.getSessionFile(sessionID)
 
 	if fp.file.pathIsExists(fullFileName) {
-		return store, errors.New("new sessionId file exist")
+		return store, errors.New("new sessionID file exist")
 	}
 	// create new session file
 	os.MkdirAll(filePath, 0777)
@@ -163,25 +163,25 @@ func (fp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 		if err != nil {
 			return store, err
 		}
-		store.Init(sessionId, value)
+		store.Init(sessionID, value)
 
 		return store, nil
 	}
 
-	store.Init(sessionId, map[string]interface{}{})
+	store.Init(sessionID, map[string]interface{}{})
 
 	return store, nil
 }
 
-// destroy session by sessionId
-func (fp *Provider) Destroy(sessionId string) error {
+// destroy session by sessionID
+func (fp *Provider) Destroy(sessionID string) error {
 
 	fp.lock.Lock()
 	defer fp.lock.Unlock()
 
-	_, _, fullFileName := fp.getSessionFile(sessionId)
+	_, _, fullFileName := fp.getSessionFile(sessionID)
 	if fp.file.pathIsExists(fullFileName) {
-		fp.removeSessionFile(sessionId)
+		fp.removeSessionFile(sessionID)
 	}
 
 	return nil
@@ -198,18 +198,18 @@ func (fp *Provider) Count() int {
 }
 
 // get session filePath, filename, fullFilename
-func (fp *Provider) getSessionFile(sessionId string) (string, string, string) {
-	filePath := path.Join(fp.config.SavePath, string(sessionId[0]), string(sessionId[1]))
-	filename := sessionId + fp.config.Suffix
+func (fp *Provider) getSessionFile(sessionID string) (string, string, string) {
+	filePath := path.Join(fp.config.SavePath, string(sessionID[0]), string(sessionID[1]))
+	filename := sessionID + fp.config.Suffix
 	fullFilename := filepath.Join(filePath, filename)
 
 	return filePath, filename, fullFilename
 }
 
 // remove session file
-func (fp *Provider) removeSessionFile(sessionId string) {
+func (fp *Provider) removeSessionFile(sessionID string) {
 
-	filePath, _, fullFileName := fp.getSessionFile(sessionId)
+	filePath, _, fullFileName := fp.getSessionFile(sessionID)
 	os.Remove(fullFileName)
 
 	// remove empty dir
@@ -217,7 +217,7 @@ func (fp *Provider) removeSessionFile(sessionId string) {
 	if len(s) == 0 {
 		os.RemoveAll(filePath)
 	}
-	filePath1 := path.Join(fp.config.SavePath, string(sessionId[0]))
+	filePath1 := path.Join(fp.config.SavePath, string(sessionID[0]))
 	s, _ = ioutil.ReadDir(filePath1)
 	if len(s) == 0 {
 		os.RemoveAll(filePath1)

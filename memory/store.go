@@ -11,16 +11,16 @@ import (
 // session memory store
 
 // new default memory store
-func NewMemoryStore(sessionId string) *Store {
+func NewMemoryStore(sessionID string) *Store {
 	memStore := &Store{}
-	memStore.Init(sessionId, make(map[string]interface{}))
+	memStore.Init(sessionID, make(map[string]interface{}))
 	return memStore
 }
 
 // new memory store data
-func NewMemoryStoreData(sessionId string, data map[string]interface{}) *Store {
+func NewMemoryStoreData(sessionID string, data map[string]interface{}) *Store {
 	memStore := &Store{}
-	memStore.Init(sessionId, data)
+	memStore.Init(sessionID, data)
 	return memStore
 }
 

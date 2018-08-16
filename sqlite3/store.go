@@ -10,16 +10,16 @@ import (
 // session sqlite3 store
 
 // new default sqlite3 store
-func NewSqLite3Store(sessionId string) *Store {
+func NewSqLite3Store(sessionID string) *Store {
 	sqlite3Store := &Store{}
-	sqlite3Store.Init(sessionId, make(map[string]interface{}))
+	sqlite3Store.Init(sessionID, make(map[string]interface{}))
 	return sqlite3Store
 }
 
 // new sqlite3 store data
-func NewSqLite3StoreData(sessionId string, data map[string]interface{}) *Store {
+func NewSqLite3StoreData(sessionID string, data map[string]interface{}) *Store {
 	sqlite3Store := &Store{}
-	sqlite3Store.Init(sessionId, data)
+	sqlite3Store.Init(sessionID, data)
 	return sqlite3Store
 }
 

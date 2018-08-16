@@ -24,7 +24,7 @@ type Config struct {
 	// select db number, default 0
 	DbNumber int
 
-	// sessionId as redis key prefix
+	// sessionID as redis key prefix
 	KeyPrefix string
 
 	// session value serialize func

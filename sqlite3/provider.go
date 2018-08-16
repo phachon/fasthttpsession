@@ -89,21 +89,21 @@ func (sp *Provider) GC() {
 }
 
 // ReadStore read session store by session id
-func (sp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+func (sp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := sp.sessionDao.getSessionBySessionId(sessionId)
+	sessionValue, err := sp.sessionDao.getSessionBySessionId(sessionID)
 	if err != nil {
 		return nil, err
 	}
 	if len(sessionValue) == 0 {
-		_, err := sp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		_, err := sp.sessionDao.insert(sessionID, "", time.Now().Unix())
 		if err != nil {
 			return nil, err
 		}
-		return NewSqLite3Store(sessionId), nil
+		return NewSqLite3Store(sessionID), nil
 	}
 	if len(sessionValue["contents"]) == 0 {
-		return NewSqLite3Store(sessionId), nil
+		return NewSqLite3Store(sessionID), nil
 	}
 
 	data, err := sp.config.UnSerializeFunc(sessionValue["contents"])
@@ -111,23 +111,23 @@ func (sp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		return nil, err
 	}
 
-	return NewSqLite3StoreData(sessionId, data), nil
+	return NewSqLite3StoreData(sessionID, data), nil
 }
 
 // Regenerate regenerate session
-func (sp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (sp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	sessionValue, err := sp.sessionDao.getSessionBySessionId(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
 	if len(sessionValue) == 0 {
-		// old sessionId not exists, insert new sessionId
-		_, err := sp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		// old sessionID not exists, insert new sessionID
+		_, err := sp.sessionDao.insert(sessionID, "", time.Now().Unix())
 		if err != nil {
 			return nil, err
 		}
-		return NewSqLite3Store(sessionId), nil
+		return NewSqLite3Store(sessionID), nil
 	}
 
 	// delete old session
@@ -136,17 +136,17 @@ func (sp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 		return nil, err
 	}
 	// insert new session
-	_, err = sp.sessionDao.insert(sessionId, string(sessionValue["contents"]), time.Now().Unix())
+	_, err = sp.sessionDao.insert(sessionID, string(sessionValue["contents"]), time.Now().Unix())
 	if err != nil {
 		return nil, err
 	}
 
-	return sp.ReadStore(sessionId)
+	return sp.ReadStore(sessionID)
 }
 
-// Destroy destroy session by sessionId
-func (sp *Provider) Destroy(sessionId string) error {
-	_, err := sp.sessionDao.deleteBySessionId(sessionId)
+// Destroy destroy session by sessionID
+func (sp *Provider) Destroy(sessionID string) error {
+	_, err := sp.sessionDao.deleteBySessionId(sessionID)
 	return err
 }
 

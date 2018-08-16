@@ -10,16 +10,16 @@ import (
 // session mysql store
 
 // new default mysql store
-func NewMysqlStore(sessionId string) *Store {
+func NewMysqlStore(sessionID string) *Store {
 	mysqlStore := &Store{}
-	mysqlStore.Init(sessionId, make(map[string]interface{}))
+	mysqlStore.Init(sessionID, make(map[string]interface{}))
 	return mysqlStore
 }
 
 // new mysql store data
-func NewMysqlStoreData(sessionId string, data map[string]interface{}) *Store {
+func NewMysqlStoreData(sessionID string, data map[string]interface{}) *Store {
 	mysqlStore := &Store{}
-	mysqlStore.Init(sessionId, data)
+	mysqlStore.Init(sessionID, data)
 	return mysqlStore
 }
 

@@ -9,16 +9,16 @@ import (
 // session memCache store
 
 // new default memCache store
-func NewMemCacheStore(sessionId string) *Store {
+func NewMemCacheStore(sessionID string) *Store {
 	memCacheStore := &Store{}
-	memCacheStore.Init(sessionId, make(map[string]interface{}))
+	memCacheStore.Init(sessionID, make(map[string]interface{}))
 	return memCacheStore
 }
 
 // new memCache store data
-func NewMemCacheStoreData(sessionId string, data map[string]interface{}) *Store {
+func NewMemCacheStoreData(sessionID string, data map[string]interface{}) *Store {
 	memCacheStore := &Store{}
-	memCacheStore.Init(sessionId, data)
+	memCacheStore.Init(sessionID, data)
 	return memCacheStore
 }
 

@@ -93,8 +93,8 @@ func (s *Session) gc() {
 }
 
 // Start session start
-// 1. get sessionId from fasthttp ctx
-// 2. if sessionId is empty, generator sessionId and set response Set-Cookie
+// 1. get sessionID from fasthttp ctx
+// 2. if sessionID is empty, generator sessionID and set response Set-Cookie
 // 3. return session provider store
 func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, err error) {
 
@@ -102,22 +102,22 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 		return sessionStore, errors.New("session start error, not set provider")
 	}
 
-	sessionId := s.GetSessionId(ctx)
-	if sessionId == "" {
+	sessionID := s.GetSessionId(ctx)
+	if sessionID == "" {
 		// new generator session id
-		sessionId = s.config.SessionIdGenerator()
-		if sessionId == "" {
-			return sessionStore, errors.New("session generator sessionId is empty")
+		sessionID = s.config.SessionIdGenerator()
+		if sessionID == "" {
+			return sessionStore, errors.New("session generator sessionID is empty")
 		}
 	}
 	// read provider session store
-	sessionStore, err = s.provider.ReadStore(sessionId)
+	sessionStore, err = s.provider.ReadStore(sessionID)
 	if err != nil {
 		return
 	}
 
 	// encode cookie value
-	encodeCookieValue := s.config.Encode(sessionId)
+	encodeCookieValue := s.config.Encode(sessionID)
 
 	// set response cookie
 	s.cookie.Set(ctx,
@@ -128,8 +128,8 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 		s.config.Secure)
 
 	if s.config.SessionIdInHttpHeader {
-		ctx.Request.Header.Set(s.config.SessionNameInHttpHeader, sessionId)
-		ctx.Response.Header.Set(s.config.SessionNameInHttpHeader, sessionId)
+		ctx.Request.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
+		ctx.Response.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
 	}
 
 	return
@@ -171,19 +171,19 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 	}
 
 	// generator new session id
-	sessionId := s.config.SessionIdGenerator()
-	if sessionId == "" {
-		return sessionStore, errors.New("session generator sessionId is empty")
+	sessionID := s.config.SessionIdGenerator()
+	if sessionID == "" {
+		return sessionStore, errors.New("session generator sessionID is empty")
 	}
 	// encode cookie value
-	encodeCookieValue := s.config.Encode(sessionId)
+	encodeCookieValue := s.config.Encode(sessionID)
 
 	oldSessionId := s.GetSessionId(ctx)
 	// regenerate provider session store
 	if oldSessionId != "" {
-		sessionStore, err = s.provider.Regenerate(oldSessionId, sessionId)
+		sessionStore, err = s.provider.Regenerate(oldSessionId, sessionID)
 	} else {
-		sessionStore, err = s.provider.ReadStore(sessionId)
+		sessionStore, err = s.provider.ReadStore(sessionID)
 	}
 	if err != nil {
 		return
@@ -199,8 +199,8 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 
 	// reset http header
 	if s.config.SessionIdInHttpHeader {
-		ctx.Request.Header.Set(s.config.SessionNameInHttpHeader, sessionId)
-		ctx.Response.Header.Set(s.config.SessionNameInHttpHeader, sessionId)
+		ctx.Request.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
+		ctx.Response.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
 	}
 
 	return
@@ -209,7 +209,7 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 // Destroy destroy session in fasthttp ctx
 func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 
-	// delete header if sessionId in http Header
+	// delete header if sessionID in http Header
 	if s.config.SessionIdInHttpHeader {
 		ctx.Request.Header.Del(s.config.SessionNameInHttpHeader)
 		ctx.Response.Header.Del(s.config.SessionNameInHttpHeader)
@@ -220,8 +220,8 @@ func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	sessionId := s.config.Decode(cookieValue)
-	s.provider.Destroy(sessionId)
+	sessionID := s.config.Decode(cookieValue)
+	s.provider.Destroy(sessionID)
 
 	// delete cookie by cookieName
 	s.cookie.Delete(ctx, s.config.CookieName)

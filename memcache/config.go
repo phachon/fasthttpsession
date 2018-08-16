@@ -15,7 +15,7 @@ type Config struct {
 	// be set to a number higher than your peak parallel requests.
 	MaxIdle int
 
-	// sessionId as memcache key prefix
+	// sessionID as memcache key prefix
 	KeyPrefix string
 
 	// session value serialize func

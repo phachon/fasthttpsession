@@ -8,16 +8,16 @@ import (
 // session redis store
 
 // NewRedisStore new default redis store
-func NewRedisStore(sessionId string) *Store {
+func NewRedisStore(sessionID string) *Store {
 	redisStore := &Store{}
-	redisStore.Init(sessionId, make(map[string]interface{}))
+	redisStore.Init(sessionID, make(map[string]interface{}))
 	return redisStore
 }
 
 // NewRedisStoreData new redis store data
-func NewRedisStoreData(sessionId string, data map[string]interface{}) *Store {
+func NewRedisStoreData(sessionID string, data map[string]interface{}) *Store {
 	redisStore := &Store{}
-	redisStore.Init(sessionId, data)
+	redisStore.Init(sessionID, data)
 	return redisStore
 }
 

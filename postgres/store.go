@@ -10,16 +10,16 @@ import (
 // session postgres store
 
 // new default postgres store
-func NewPostgresStore(sessionId string) *Store {
+func NewPostgresStore(sessionID string) *Store {
 	postgresStore := &Store{}
-	postgresStore.Init(sessionId, make(map[string]interface{}))
+	postgresStore.Init(sessionID, make(map[string]interface{}))
 	return postgresStore
 }
 
 // NewPostgresStoreData new postgres store data
-func NewPostgresStoreData(sessionId string, data map[string]interface{}) *Store {
+func NewPostgresStoreData(sessionID string, data map[string]interface{}) *Store {
 	postgresStore := &Store{}
-	postgresStore.Init(sessionId, data)
+	postgresStore.Init(sessionID, data)
 	return postgresStore
 }
 

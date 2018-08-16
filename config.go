@@ -59,13 +59,13 @@ type Config struct {
 	// set whether to pass this bar cookie only through HTTPS
 	Secure bool
 
-	// sessionId is in url query
+	// sessionID is in url query
 	SessionIdInURLQuery bool
 
 	// sessionName in url query
 	SessionNameInUrlQuery string
 
-	// sessionId is in http header
+	// sessionID is in http header
 	SessionIdInHttpHeader bool
 
 	// sessionName in http header
@@ -81,7 +81,7 @@ type Config struct {
 	DecodeFunc func(cookieValue string) (string, error)
 }
 
-// SessionIdGenerator sessionId generator
+// SessionIdGenerator sessionID generator
 func (c *Config) SessionIdGenerator() string {
 	sessionIdGenerator := c.SessionIdGeneratorFunc
 	if sessionIdGenerator == nil {
@@ -91,7 +91,7 @@ func (c *Config) SessionIdGenerator() string {
 	return sessionIdGenerator()
 }
 
-// default sessionId generator => uuid
+// default sessionID generator => uuid
 func (c *Config) defaultSessionIdGenerator() string {
 	return uuid.NewV4().String()
 }

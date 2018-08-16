@@ -47,50 +47,50 @@ func (mp *Provider) NeedGC() bool {
 
 // session garbage collection
 func (mp *Provider) GC() {
-	for sessionId, value := range mp.values.GetAll() {
+	for sessionID, value := range mp.values.GetAll() {
 		if time.Now().Unix() >= value.(*Store).lastActiveTime+mp.maxLifeTime {
-			// destroy session sessionId
-			mp.Destroy(sessionId)
+			// destroy session sessionID
+			mp.Destroy(sessionID)
 			return
 		}
 	}
 }
 
 // read session store by session id
-func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
-	memStore := mp.values.Get(sessionId)
+func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
+	memStore := mp.values.Get(sessionID)
 	if memStore != nil {
 		return memStore.(*Store), nil
 	}
 
-	newMemStore := NewMemoryStore(sessionId)
-	mp.values.Set(sessionId, newMemStore)
+	newMemStore := NewMemoryStore(sessionID)
+	mp.values.Set(sessionID, newMemStore)
 
 	return newMemStore, nil
 }
 
 // regenerate session
-func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 	memStoreInter := mp.values.Get(oldSessionId)
 	if memStoreInter != nil {
 		memStore := memStoreInter.(*Store)
 		// insert new session store
-		newMemStore := NewMemoryStoreData(sessionId, memStore.GetAll())
-		mp.values.Set(sessionId, newMemStore)
+		newMemStore := NewMemoryStoreData(sessionID, memStore.GetAll())
+		mp.values.Set(sessionID, newMemStore)
 		// delete old session store
 		mp.values.Delete(oldSessionId)
 		return newMemStore, nil
 	}
 
-	memStore := NewMemoryStore(sessionId)
-	mp.values.Set(sessionId, memStore)
+	memStore := NewMemoryStore(sessionID)
+	mp.values.Set(sessionID, memStore)
 
 	return memStore, nil
 }
 
-// destroy session by sessionId
-func (mp *Provider) Destroy(sessionId string) error {
-	mp.values.Delete(sessionId)
+// destroy session by sessionID
+func (mp *Provider) Destroy(sessionID string) error {
+	mp.values.Delete(sessionID)
 	return nil
 }
 

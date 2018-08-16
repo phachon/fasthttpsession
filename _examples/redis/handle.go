@@ -155,7 +155,7 @@ func destroyHandle(ctx *fasthttp.RequestCtx) {
 	ctx.SetBodyString("fasthttpsession destroy")
 }
 
-// get sessionId handle
+// get sessionID handle
 func sessionIdHandle(ctx *fasthttp.RequestCtx) {
 	// start session
 	sessionStore, err := session.Start(ctx)
@@ -166,8 +166,8 @@ func sessionIdHandle(ctx *fasthttp.RequestCtx) {
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
-	sessionId := sessionStore.GetSessionId()
-	ctx.SetBodyString("fasthttpsession sessionId: " + sessionId)
+	sessionID := sessionStore.GetSessionId()
+	ctx.SetBodyString("fasthttpsession sessionID: " + sessionID)
 }
 
 // regenerate handler
@@ -184,7 +184,7 @@ func regenerateHandle(ctx *fasthttp.RequestCtx) {
 	sessionStore.Set("name", "foo")
 	sessionStore.Get("name")
 
-	sessionId := sessionStore.GetSessionId()
+	sessionID := sessionStore.GetSessionId()
 
-	ctx.SetBodyString("fasthttpsession regenerate sessionId: " + sessionId)
+	ctx.SetBodyString("fasthttpsession regenerate sessionID: " + sessionID)
 }

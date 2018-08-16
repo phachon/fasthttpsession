@@ -19,9 +19,9 @@ func (fs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	fileProvider.lock.Lock()
 	defer fileProvider.lock.Unlock()
 
-	sessionId := fs.GetSessionId()
+	sessionID := fs.GetSessionId()
 
-	_, _, fullFileName := fileProvider.getSessionFile(sessionId)
+	_, _, fullFileName := fileProvider.getSessionFile(sessionID)
 
 	if fileProvider.file.pathIsExists(fullFileName) {
 		sessionMap := fs.GetAll()

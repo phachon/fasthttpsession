@@ -72,20 +72,20 @@ func (mcp *Provider) NeedGC() bool {
 func (mcp *Provider) GC() {}
 
 // read session store by session id
-func (mcp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+func (mcp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
 	memClient := mcp.getMemCacheClient()
 
-	item, err := memClient.Get(mcp.getMemCacheSessionKey(sessionId))
+	item, err := memClient.Get(mcp.getMemCacheSessionKey(sessionID))
 	if err != nil {
 		if err == memcache.ErrCacheMiss {
-			return NewMemCacheStore(sessionId), nil
+			return NewMemCacheStore(sessionID), nil
 		} else {
 			return nil, err
 		}
 	}
 	if len(item.Value) == 0 {
-		return NewMemCacheStore(sessionId), nil
+		return NewMemCacheStore(sessionID), nil
 	}
 
 	data, err := mcp.config.UnSerializeFunc(item.Value)
@@ -93,46 +93,46 @@ func (mcp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, 
 		return nil, err
 	}
 
-	return NewMemCacheStoreData(sessionId, data), nil
+	return NewMemCacheStoreData(sessionID, data), nil
 }
 
 // regenerate session
-func (mcp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (mcp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	memClient := mcp.getMemCacheClient()
 
 	item, err := memClient.Get(mcp.getMemCacheSessionKey(oldSessionId))
 	if err != nil || len(item.Value) == 0 {
-		// false, old sessionId not exists
+		// false, old sessionID not exists
 		err := memClient.Set(&memcache.Item{
-			Key:        mcp.getMemCacheSessionKey(sessionId),
+			Key:        mcp.getMemCacheSessionKey(sessionID),
 			Value:      []byte(""),
 			Expiration: int32(mcp.maxLifeTime),
 		})
 		if err != nil {
 			return nil, err
 		}
-		return NewMemCacheStore(sessionId), nil
+		return NewMemCacheStore(sessionID), nil
 	}
-	// true, old sessionId exists, delete old sessionId
+	// true, old sessionID exists, delete old sessionID
 	err = memClient.Delete(mcp.getMemCacheSessionKey(oldSessionId))
 	if err != nil {
 		return nil, err
 	}
-	item.Key = mcp.getMemCacheSessionKey(sessionId)
+	item.Key = mcp.getMemCacheSessionKey(sessionID)
 	item.Expiration = int32(mcp.maxLifeTime)
 	err = memClient.Set(item)
 	if err != nil {
 		return nil, err
 	}
 
-	return mcp.ReadStore(sessionId)
+	return mcp.ReadStore(sessionID)
 }
 
-// destroy session by sessionId
-func (mcp *Provider) Destroy(sessionId string) error {
+// destroy session by sessionID
+func (mcp *Provider) Destroy(sessionID string) error {
 	memClient := mcp.getMemCacheClient()
-	return memClient.Delete(mcp.getMemCacheSessionKey(sessionId))
+	return memClient.Delete(mcp.getMemCacheSessionKey(sessionID))
 }
 
 // session values count
@@ -140,9 +140,9 @@ func (mcp *Provider) Count() int {
 	return 0
 }
 
-// get memcache session key, prefix:sessionId
-func (mcp *Provider) getMemCacheSessionKey(sessionId string) string {
-	return mcp.config.KeyPrefix + ":" + sessionId
+// get memcache session key, prefix:sessionID
+func (mcp *Provider) getMemCacheSessionKey(sessionID string) string {
+	return mcp.config.KeyPrefix + ":" + sessionID
 }
 
 func (mcp *Provider) getMemCacheClient() *memcache.Client {

@@ -92,21 +92,21 @@ func (mp *Provider) GC() {
 }
 
 // read session store by session id
-func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := mp.sessionDao.getSessionBySessionId(sessionId)
+	sessionValue, err := mp.sessionDao.getSessionBySessionId(sessionID)
 	if err != nil {
 		return nil, err
 	}
 	if len(sessionValue) == 0 {
-		_, err := mp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		_, err := mp.sessionDao.insert(sessionID, "", time.Now().Unix())
 		if err != nil {
 			return nil, err
 		}
-		return NewMysqlStore(sessionId), nil
+		return NewMysqlStore(sessionID), nil
 	}
 	if len(sessionValue["contents"]) == 0 {
-		return NewMysqlStore(sessionId), nil
+		return NewMysqlStore(sessionID), nil
 	}
 
 	data, err := mp.config.UnSerializeFunc(sessionValue["contents"])
@@ -114,23 +114,23 @@ func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		return nil, err
 	}
 
-	return NewMysqlStoreData(sessionId, data), nil
+	return NewMysqlStoreData(sessionID, data), nil
 }
 
 // regenerate session
-func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	sessionValue, err := mp.sessionDao.getSessionBySessionId(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
 	if len(sessionValue) == 0 {
-		// old sessionId not exists, insert new sessionId
-		_, err := mp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		// old sessionID not exists, insert new sessionID
+		_, err := mp.sessionDao.insert(sessionID, "", time.Now().Unix())
 		if err != nil {
 			return nil, err
 		}
-		return NewMysqlStore(sessionId), nil
+		return NewMysqlStore(sessionID), nil
 	}
 
 	// delete old session
@@ -139,17 +139,17 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 		return nil, err
 	}
 	// insert new session
-	_, err = mp.sessionDao.insert(sessionId, string(sessionValue["contents"]), time.Now().Unix())
+	_, err = mp.sessionDao.insert(sessionID, string(sessionValue["contents"]), time.Now().Unix())
 	if err != nil {
 		return nil, err
 	}
 
-	return mp.ReadStore(sessionId)
+	return mp.ReadStore(sessionID)
 }
 
-// destroy session by sessionId
-func (mp *Provider) Destroy(sessionId string) error {
-	_, err := mp.sessionDao.deleteBySessionId(sessionId)
+// destroy session by sessionID
+func (mp *Provider) Destroy(sessionID string) error {
+	_, err := mp.sessionDao.deleteBySessionId(sessionID)
 	return err
 }
 

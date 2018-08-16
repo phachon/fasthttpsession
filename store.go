@@ -16,13 +16,13 @@ type SessionStore interface {
 }
 
 type Store struct {
-	sessionId string
+	sessionID string
 	data      *CCMap
 }
 
-// Init init store data and sessionId
-func (s *Store) Init(sessionId string, data map[string]interface{}) {
-	s.sessionId = sessionId
+// Init init store data and sessionID
+func (s *Store) Init(sessionID string, data map[string]interface{}) {
+	s.sessionID = sessionID
 	s.data = NewDefaultCCMap()
 	s.data.MSet(data)
 }
@@ -54,5 +54,5 @@ func (s *Store) Flush() {
 
 // GetSessionId get session id
 func (s *Store) GetSessionId() string {
-	return s.sessionId
+	return s.sessionID
 }

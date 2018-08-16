@@ -25,14 +25,14 @@ type sessionDao struct {
 	tableName    string
 }
 
-// get session by sessionId
-func (dao *sessionDao) getSessionBySessionId(sessionId string) (session map[string][]byte, err error) {
+// get session by sessionID
+func (dao *sessionDao) getSessionBySessionId(sessionID string) (session map[string][]byte, err error) {
 
 	sqlStr := fmt.Sprintf("SELECT * FROM %s WHERE session_id=?", dao.tableName)
-	return dao.getRow(sqlStr, sessionId)
+	return dao.getRow(sqlStr, sessionID)
 }
 
-// count sessionId
+// count sessionID
 func (dao *sessionDao) countSessions() int {
 	sqlStr := fmt.Sprintf("SELECT count(*) as total FROM %s", dao.tableName)
 	res, err := dao.getRow(sqlStr)
@@ -43,16 +43,16 @@ func (dao *sessionDao) countSessions() int {
 	return total
 }
 
-// update session by sessionId
-func (dao *sessionDao) updateBySessionId(sessionId string, contents string, lastActiveTime int64) (int64, error) {
+// update session by sessionID
+func (dao *sessionDao) updateBySessionId(sessionID string, contents string, lastActiveTime int64) (int64, error) {
 	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=? WHERE session_id=?", dao.tableName)
-	return dao.execute(sqlStr, contents, lastActiveTime, sessionId)
+	return dao.execute(sqlStr, contents, lastActiveTime, sessionID)
 }
 
-// delete session by sessionId
-func (dao *sessionDao) deleteBySessionId(sessionId string) (int64, error) {
+// delete session by sessionID
+func (dao *sessionDao) deleteBySessionId(sessionID string) (int64, error) {
 	sqlStr := fmt.Sprintf("DELETE FROM %s WHERE session_id=?", dao.tableName)
-	return dao.execute(sqlStr, sessionId)
+	return dao.execute(sqlStr, sessionID)
 }
 
 // delete session by maxLifeTime
@@ -63,9 +63,9 @@ func (dao *sessionDao) deleteSessionByMaxLifeTime(maxLifeTime int64) (int64, err
 }
 
 // insert new session
-func (dao *sessionDao) insert(sessionId string, contents string, lastActiveTime int64) (int64, error) {
+func (dao *sessionDao) insert(sessionID string, contents string, lastActiveTime int64) (int64, error) {
 	sqlStr := fmt.Sprintf("INSERT INTO %s (session_id, contents, last_active) VALUES (?,?,?)", dao.tableName)
-	return dao.execute(sqlStr, sessionId, contents, lastActiveTime)
+	return dao.execute(sqlStr, sessionID, contents, lastActiveTime)
 }
 
 // get rows

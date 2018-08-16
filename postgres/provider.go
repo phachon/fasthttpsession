@@ -92,21 +92,21 @@ func (pp *Provider) GC() {
 }
 
 // read session store by session id
-func (pp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+func (pp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := pp.sessionDao.getSessionBySessionId(sessionId)
+	sessionValue, err := pp.sessionDao.getSessionBySessionId(sessionID)
 	if err != nil {
 		return nil, err
 	}
 	if len(sessionValue) == 0 {
-		_, err := pp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		_, err := pp.sessionDao.insert(sessionID, "", time.Now().Unix())
 		if err != nil {
 			return nil, err
 		}
-		return NewPostgresStore(sessionId), nil
+		return NewPostgresStore(sessionID), nil
 	}
 	if len(sessionValue["contents"]) == 0 {
-		return NewPostgresStore(sessionId), nil
+		return NewPostgresStore(sessionID), nil
 	}
 
 	data, err := pp.config.UnSerializeFunc(sessionValue["contents"])
@@ -114,23 +114,23 @@ func (pp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		return nil, err
 	}
 
-	return NewPostgresStoreData(sessionId, data), nil
+	return NewPostgresStoreData(sessionID, data), nil
 }
 
 // regenerate session
-func (pp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (pp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	sessionValue, err := pp.sessionDao.getSessionBySessionId(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
 	if len(sessionValue) == 0 {
-		// old sessionId not exists, insert new sessionId
-		_, err := pp.sessionDao.insert(sessionId, "", time.Now().Unix())
+		// old sessionID not exists, insert new sessionID
+		_, err := pp.sessionDao.insert(sessionID, "", time.Now().Unix())
 		if err != nil {
 			return nil, err
 		}
-		return NewPostgresStore(sessionId), nil
+		return NewPostgresStore(sessionID), nil
 	}
 
 	// delete old session
@@ -139,17 +139,17 @@ func (pp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 		return nil, err
 	}
 	// insert new session
-	_, err = pp.sessionDao.insert(sessionId, string(sessionValue["contents"]), time.Now().Unix())
+	_, err = pp.sessionDao.insert(sessionID, string(sessionValue["contents"]), time.Now().Unix())
 	if err != nil {
 		return nil, err
 	}
 
-	return pp.ReadStore(sessionId)
+	return pp.ReadStore(sessionID)
 }
 
-// destroy session by sessionId
-func (pp *Provider) Destroy(sessionId string) error {
-	_, err := pp.sessionDao.deleteBySessionId(sessionId)
+// destroy session by sessionID
+func (pp *Provider) Destroy(sessionID string) error {
+	_, err := pp.sessionDao.deleteBySessionId(sessionID)
 	return err
 }
 

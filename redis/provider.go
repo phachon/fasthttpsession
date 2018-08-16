@@ -85,18 +85,18 @@ func (rp *Provider) NeedGC() bool {
 func (rp *Provider) GC() {}
 
 // ReadStore read session store by session id
-func (rp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
+func (rp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
 	conn := rp.redisPool.Get()
 	defer conn.Close()
 
-	reply, err := redis.Bytes(conn.Do("GET", rp.getRedisSessionKey(sessionId)))
+	reply, err := redis.Bytes(conn.Do("GET", rp.getRedisSessionKey(sessionID)))
 	if err != nil && err != redis.ErrNil {
 		return nil, err
 	}
 	if len(reply) == 0 {
-		conn.Do("SET", rp.getRedisSessionKey(sessionId), "", "EX", rp.maxLifeTime)
-		return NewRedisStore(sessionId), nil
+		conn.Do("SET", rp.getRedisSessionKey(sessionID), "", "EX", rp.maxLifeTime)
+		return NewRedisStore(sessionID), nil
 	}
 
 	data, err := rp.config.UnSerializeFunc(reply)
@@ -104,11 +104,11 @@ func (rp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 		return nil, err
 	}
 
-	return NewRedisStoreData(sessionId, data), nil
+	return NewRedisStoreData(sessionID, data), nil
 }
 
 // Regenerate regenerate session
-func (rp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+func (rp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	conn := rp.redisPool.Get()
 	defer conn.Close()
@@ -116,26 +116,26 @@ func (rp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	existed, err := redis.Int(conn.Do("EXISTS", rp.getRedisSessionKey(oldSessionId)))
 	if err != nil || existed == 0 {
 		// false
-		conn.Do("SET", rp.getRedisSessionKey(sessionId), "", "EX", rp.maxLifeTime)
-		return NewRedisStore(sessionId), nil
+		conn.Do("SET", rp.getRedisSessionKey(sessionID), "", "EX", rp.maxLifeTime)
+		return NewRedisStore(sessionID), nil
 	}
 	// true
-	conn.Do("RENAME", rp.getRedisSessionKey(oldSessionId), rp.getRedisSessionKey(sessionId))
-	conn.Do("EXPIRE", rp.getRedisSessionKey(sessionId), rp.maxLifeTime)
+	conn.Do("RENAME", rp.getRedisSessionKey(oldSessionId), rp.getRedisSessionKey(sessionID))
+	conn.Do("EXPIRE", rp.getRedisSessionKey(sessionID), rp.maxLifeTime)
 
-	return rp.ReadStore(sessionId)
+	return rp.ReadStore(sessionID)
 }
 
-// Destroy destroy session by sessionId
-func (rp *Provider) Destroy(sessionId string) error {
+// Destroy destroy session by sessionID
+func (rp *Provider) Destroy(sessionID string) error {
 	conn := rp.redisPool.Get()
 	defer conn.Close()
 
-	existed, err := redis.Int(conn.Do("EXISTS", rp.getRedisSessionKey(sessionId)))
+	existed, err := redis.Int(conn.Do("EXISTS", rp.getRedisSessionKey(sessionID)))
 	if err != nil || existed == 0 {
 		return nil
 	}
-	conn.Do("DEL", rp.getRedisSessionKey(sessionId))
+	conn.Do("DEL", rp.getRedisSessionKey(sessionID))
 	return nil
 }
 
@@ -151,9 +151,9 @@ func (rp *Provider) Count() int {
 	return len(replyMap)
 }
 
-// get redis session key, prefix:sessionId
-func (rp *Provider) getRedisSessionKey(sessionId string) string {
-	return rp.config.KeyPrefix + ":" + sessionId
+// get redis session key, prefix:sessionID
+func (rp *Provider) getRedisSessionKey(sessionID string) string {
+	return rp.config.KeyPrefix + ":" + sessionID
 }
 
 // register session provider

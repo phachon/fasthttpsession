@@ -121,13 +121,13 @@ type Config struct {
 	// set whether to pass this bar cookie only through HTTPS
 	Secure bool
 	
-	// sessionId is in url query
+	// sessionID is in url query
 	SessionIdInURLQuery bool
 	
 	// sessionName in url query
 	SessionNameInUrlQuery string
 	
-	// sessionId is in http header
+	// sessionID is in http header
 	SessionIdInHttpHeader bool
 	
 	// sessionName in http header
