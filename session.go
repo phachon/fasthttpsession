@@ -102,7 +102,7 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 		return sessionStore, errors.New("session start error, not set provider")
 	}
 
-	sessionID := s.GetSessionId(ctx)
+	sessionID := s.GetSessionID(ctx)
 	if sessionID == "" {
 		// new generator session id
 		sessionID = s.config.SessionIdGenerator()
@@ -135,11 +135,11 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 	return
 }
 
-// GetSessionId get session id
+// GetSessionID get session id
 // 1. get session id by reading from cookie
 // 2. get session id from query
 // 3. get session id from http headers
-func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) string {
+func (s *Session) GetSessionID(ctx *fasthttp.RequestCtx) string {
 
 	cookieByte := ctx.Request.Header.Cookie(s.config.CookieName)
 	if len(cookieByte) > 0 {
@@ -178,7 +178,7 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 	// encode cookie value
 	encodeCookieValue := s.config.Encode(sessionID)
 
-	oldSessionId := s.GetSessionId(ctx)
+	oldSessionId := s.GetSessionID(ctx)
 	// regenerate provider session store
 	if oldSessionId != "" {
 		sessionStore, err = s.provider.Regenerate(oldSessionId, sessionID)

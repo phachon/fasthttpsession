@@ -35,7 +35,7 @@ func (mcs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	}
 
 	return provider.memCacheClient.Set(&memcache.Item{
-		Key:        provider.getMemCacheSessionKey(mcs.GetSessionId()),
+		Key:        provider.getMemCacheSessionKey(mcs.GetSessionID()),
 		Value:      value,
 		Expiration: int32(provider.maxLifeTime),
 	})

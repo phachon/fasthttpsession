@@ -34,10 +34,10 @@ func (ps *Store) Save(ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		return err
 	}
-	session, err := provider.sessionDao.getSessionBySessionId(ps.GetSessionId())
+	session, err := provider.sessionDao.getSessionBySessionId(ps.GetSessionID())
 	if err != nil || len(session) == 0 {
 		return nil
 	}
-	_, err = provider.sessionDao.updateBySessionId(ps.GetSessionId(), string(b), time.Now().Unix())
+	_, err = provider.sessionDao.updateBySessionId(ps.GetSessionID(), string(b), time.Now().Unix())
 	return err
 }

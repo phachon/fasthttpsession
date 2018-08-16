@@ -12,9 +12,10 @@ type SessionStore interface {
 	Set(key string, value interface{})
 	Delete(key string)
 	Flush()
-	GetSessionId() string
+	GetSessionID() string
 }
 
+// Store store
 type Store struct {
 	sessionID string
 	data      *CCMap
@@ -52,7 +53,7 @@ func (s *Store) Flush() {
 	s.data.Clear()
 }
 
-// GetSessionId get session id
-func (s *Store) GetSessionId() string {
+// GetSessionID get session id
+func (s *Store) GetSessionID() string {
 	return s.sessionID
 }

@@ -166,7 +166,7 @@ func sessionIdHandle(ctx *fasthttp.RequestCtx) {
 	// must defer sessionStore.save(ctx)
 	defer sessionStore.Save(ctx)
 
-	sessionID := sessionStore.GetSessionId()
+	sessionID := sessionStore.GetSessionID()
 	ctx.SetBodyString("fasthttpsession sessionID: " + sessionID)
 }
 
@@ -184,7 +184,7 @@ func regenerateHandle(ctx *fasthttp.RequestCtx) {
 	sessionStore.Set("name", "foo")
 	sessionStore.Get("name")
 
-	sessionID := sessionStore.GetSessionId()
+	sessionID := sessionStore.GetSessionID()
 
 	ctx.SetBodyString("fasthttpsession regenerate sessionID: " + sessionID)
 }

@@ -34,7 +34,7 @@ func (rs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	}
 	conn := provider.redisPool.Get()
 	defer conn.Close()
-	conn.Do("SETEX", provider.getRedisSessionKey(rs.GetSessionId()), provider.maxLifeTime, string(b))
+	conn.Do("SETEX", provider.getRedisSessionKey(rs.GetSessionID()), provider.maxLifeTime, string(b))
 
 	return nil
 }

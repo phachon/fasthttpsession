@@ -19,7 +19,7 @@ func (fs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	fileProvider.lock.Lock()
 	defer fileProvider.lock.Unlock()
 
-	sessionID := fs.GetSessionId()
+	sessionID := fs.GetSessionID()
 
 	_, _, fullFileName := fileProvider.getSessionFile(sessionID)
 
