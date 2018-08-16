@@ -90,10 +90,10 @@ func (f *file) count(dirPth, suffix string) (total int, err error) {
 		}
 		if suffix != "" {
 			if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
-				total += 1
+				total++
 			}
 		} else {
-			total += 1
+			total++
 		}
 		return nil
 	})

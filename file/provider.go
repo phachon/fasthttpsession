@@ -16,6 +16,7 @@ import (
 
 // session file provider
 
+// ProviderName file provider name
 const ProviderName = "file"
 
 var (
@@ -23,6 +24,7 @@ var (
 	encrypt      = fasthttpsession.NewEncrypt()
 )
 
+// Provider provider struct
 type Provider struct {
 	lock        sync.RWMutex
 	file        *file
@@ -30,7 +32,7 @@ type Provider struct {
 	maxLifeTime int64
 }
 
-// new file provider
+// NewProvider new file provider
 func NewProvider() *Provider {
 	return &Provider{
 		file:   &file{},
@@ -38,7 +40,7 @@ func NewProvider() *Provider {
 	}
 }
 
-// init provider config
+// Init init provider config
 func (fp *Provider) Init(lifeTime int64, fileConfig fasthttpsession.ProviderConfig) error {
 	if fileConfig.Name() != ProviderName {
 		return errors.New("session file provider init error, config must file config")
@@ -66,12 +68,12 @@ func (fp *Provider) Init(lifeTime int64, fileConfig fasthttpsession.ProviderConf
 	return nil
 }
 
-// need gc
+// NeedGC need gc
 func (fp *Provider) NeedGC() bool {
 	return true
 }
 
-// session garbage collection
+// GC session garbage collection
 func (fp *Provider) GC() {
 
 	files, err := fp.file.walkDir(fp.config.SavePath, fp.config.Suffix)
@@ -88,7 +90,7 @@ func (fp *Provider) GC() {
 	}
 }
 
-// read session store by session id
+// ReadStore read session store by session id
 func (fp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
 	fp.lock.Lock()
@@ -125,14 +127,14 @@ func (fp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, e
 	return store, nil
 }
 
-// regenerate session
-func (fp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
+// Regenerate regenerate session
+func (fp *Provider) Regenerate(oldSessionID string, sessionID string) (fasthttpsession.SessionStore, error) {
 
 	fp.lock.Lock()
 	defer fp.lock.Unlock()
 	store := &Store{}
 
-	_, _, oldFullFileName := fp.getSessionFile(oldSessionId)
+	_, _, oldFullFileName := fp.getSessionFile(oldSessionID)
 	filePath, _, fullFileName := fp.getSessionFile(sessionID)
 
 	if fp.file.pathIsExists(fullFileName) {
@@ -154,7 +156,7 @@ func (fp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 		// write new session file
 		ioutil.WriteFile(fullFileName, sessionInfo, 0777)
 		// remove old session file
-		fp.removeSessionFile(oldSessionId)
+		fp.removeSessionFile(oldSessionID)
 		// update new session file time
 		os.Chtimes(fullFileName, time.Now(), time.Now())
 
@@ -173,7 +175,7 @@ func (fp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	return store, nil
 }
 
-// destroy session by sessionID
+// Destroy destroy session by sessionID
 func (fp *Provider) Destroy(sessionID string) error {
 
 	fp.lock.Lock()
@@ -187,7 +189,7 @@ func (fp *Provider) Destroy(sessionID string) error {
 	return nil
 }
 
-// session values count
+// Count session values count
 func (fp *Provider) Count() int {
 	fp.lock.Lock()
 	defer fp.lock.Unlock()

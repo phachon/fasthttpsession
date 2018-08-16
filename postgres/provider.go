@@ -22,6 +22,7 @@ import (
 //  create index last_active on session (last_active);
 //
 
+// ProviderName postgres provider name
 const ProviderName = "postgres"
 
 var (
@@ -29,6 +30,7 @@ var (
 	encrypt  = fasthttpsession.NewEncrypt()
 )
 
+// Provider provider struct
 type Provider struct {
 	config      *Config
 	values      *fasthttpsession.CCMap
@@ -81,20 +83,20 @@ func (pp *Provider) Init(lifeTime int64, postgresConfig fasthttpsession.Provider
 	return sessionDao.postgresConn.Ping()
 }
 
-// not need gc
+// NeedGC not need gc
 func (pp *Provider) NeedGC() bool {
 	return true
 }
 
-// session postgres provider not need garbage collection
+// GC session postgres provider not need garbage collection
 func (pp *Provider) GC() {
 	pp.sessionDao.deleteSessionByMaxLifeTime(pp.maxLifeTime)
 }
 
-// read session store by session id
+// ReadStore read session store by session id
 func (pp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := pp.sessionDao.getSessionBySessionId(sessionID)
+	sessionValue, err := pp.sessionDao.getSessionBySessionID(sessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,10 +119,10 @@ func (pp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, e
 	return NewPostgresStoreData(sessionID, data), nil
 }
 
-// regenerate session
-func (pp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
+// Regenerate regenerate session
+func (pp *Provider) Regenerate(oldSessionID string, sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := pp.sessionDao.getSessionBySessionId(oldSessionId)
+	sessionValue, err := pp.sessionDao.getSessionBySessionID(oldSessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +136,7 @@ func (pp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	}
 
 	// delete old session
-	_, err = pp.sessionDao.deleteBySessionId(oldSessionId)
+	_, err = pp.sessionDao.deleteBySessionID(oldSessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -147,13 +149,13 @@ func (pp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	return pp.ReadStore(sessionID)
 }
 
-// destroy session by sessionID
+// Destroy destroy session by sessionID
 func (pp *Provider) Destroy(sessionID string) error {
-	_, err := pp.sessionDao.deleteBySessionId(sessionID)
+	_, err := pp.sessionDao.deleteBySessionID(sessionID)
 	return err
 }
 
-// session values count
+// Count session values count
 func (pp *Provider) Count() int {
 	return pp.sessionDao.countSessions()
 }

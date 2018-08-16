@@ -1,7 +1,6 @@
 package file
 
-// session file config
-
+// Config session file config
 type Config struct {
 
 	// session file save path
@@ -17,6 +16,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// Name return provider name
 func (fc *Config) Name() string {
 	return ProviderName
 }

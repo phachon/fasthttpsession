@@ -9,11 +9,12 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (fs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	fileProvider.lock.Lock()

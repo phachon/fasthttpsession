@@ -43,6 +43,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// NewConfigWith instance new config with especific paremters
 func NewConfigWith(host string, port int64, username string, password string, dbName string, tableName string) (cf *Config) {
 	cf = NewDefaultConfig()
 	cf.Host = host
@@ -54,6 +55,7 @@ func NewConfigWith(host string, port int64, username string, password string, db
 	return
 }
 
+// NewDefaultConfig return default config instance
 func NewDefaultConfig() *Config {
 	return &Config{
 		Host:           "127.0.0.1",
@@ -78,6 +80,7 @@ func (pc *Config) getPostgresDSN() string {
 		pc.ConnTimeout)
 }
 
+// Name return provider name
 func (pc *Config) Name() string {
 	return ProviderName
 }

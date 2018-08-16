@@ -34,6 +34,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// Name return provider name
 func (mc *Config) Name() string {
 	return ProviderName
 }

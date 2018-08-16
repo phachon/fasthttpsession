@@ -9,7 +9,7 @@ import (
 
 // session postgres store
 
-// new default postgres store
+// NewPostgresStore new default postgres store
 func NewPostgresStore(sessionID string) *Store {
 	postgresStore := &Store{}
 	postgresStore.Init(sessionID, make(map[string]interface{}))
@@ -23,6 +23,7 @@ func NewPostgresStoreData(sessionID string, data map[string]interface{}) *Store 
 	return postgresStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
@@ -34,10 +35,10 @@ func (ps *Store) Save(ctx *fasthttp.RequestCtx) error {
 	if err != nil {
 		return err
 	}
-	session, err := provider.sessionDao.getSessionBySessionId(ps.GetSessionID())
+	session, err := provider.sessionDao.getSessionBySessionID(ps.GetSessionID())
 	if err != nil || len(session) == 0 {
 		return nil
 	}
-	_, err = provider.sessionDao.updateBySessionId(ps.GetSessionID(), string(b), time.Now().Unix())
+	_, err = provider.sessionDao.updateBySessionID(ps.GetSessionID(), string(b), time.Now().Unix())
 	return err
 }

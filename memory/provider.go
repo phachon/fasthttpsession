@@ -10,15 +10,17 @@ import (
 
 // session memory provider
 
+// ProviderName memory provider name
 const ProviderName = "memory"
 
+// Provider provider struct
 type Provider struct {
 	config      *Config
 	values      *fasthttpsession.CCMap
 	maxLifeTime int64
 }
 
-// new memory provider
+// NewProvider new memory provider
 func NewProvider() *Provider {
 	return &Provider{
 		config:      &Config{},
@@ -27,7 +29,7 @@ func NewProvider() *Provider {
 	}
 }
 
-// init provider config
+// Init init provider config
 func (mp *Provider) Init(lifeTime int64, memoryConfig fasthttpsession.ProviderConfig) error {
 	if memoryConfig.Name() != ProviderName {
 		return errors.New("session memory provider init error, config must memory config")
@@ -40,12 +42,12 @@ func (mp *Provider) Init(lifeTime int64, memoryConfig fasthttpsession.ProviderCo
 	return nil
 }
 
-// need gc
+// NeedGC need gc
 func (mp *Provider) NeedGC() bool {
 	return true
 }
 
-// session garbage collection
+// GC session garbage collection
 func (mp *Provider) GC() {
 	for sessionID, value := range mp.values.GetAll() {
 		if time.Now().Unix() >= value.(*Store).lastActiveTime+mp.maxLifeTime {
@@ -56,7 +58,7 @@ func (mp *Provider) GC() {
 	}
 }
 
-// read session store by session id
+// ReadStore read session store by session id
 func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 	memStore := mp.values.Get(sessionID)
 	if memStore != nil {
@@ -69,7 +71,7 @@ func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, e
 	return newMemStore, nil
 }
 
-// regenerate session
+// Regenerate regenerate session
 func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 	memStoreInter := mp.values.Get(oldSessionId)
 	if memStoreInter != nil {
@@ -88,13 +90,13 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	return memStore, nil
 }
 
-// destroy session by sessionID
+// Destroy destroy session by sessionID
 func (mp *Provider) Destroy(sessionID string) error {
 	mp.values.Delete(sessionID)
 	return nil
 }
 
-// session values count
+// Count session values count
 func (mp *Provider) Count() int {
 	return mp.values.Count()
 }

@@ -26,7 +26,7 @@ type sessionDao struct {
 }
 
 // count sessionID
-func (dao *sessionDao) sessionIdIsExists(sessionID string) bool {
+func (dao *sessionDao) sessionIDIsExists(sessionID string) bool {
 	sqlStr := fmt.Sprintf("SELECT count(*) as total FROM %s WHERE session_id=?", dao.tableName)
 	res, err := dao.getRow(sqlStr, sessionID)
 	if err != nil {
@@ -40,7 +40,7 @@ func (dao *sessionDao) sessionIdIsExists(sessionID string) bool {
 }
 
 // get session by sessionID
-func (dao *sessionDao) getSessionBySessionId(sessionID string) (session map[string][]byte, err error) {
+func (dao *sessionDao) getSessionBySessionID(sessionID string) (session map[string][]byte, err error) {
 
 	sqlStr := fmt.Sprintf("SELECT * FROM %s WHERE session_id=?", dao.tableName)
 	return dao.getRow(sqlStr, sessionID)
@@ -58,13 +58,13 @@ func (dao *sessionDao) countSessions() int {
 }
 
 // update session by sessionID
-func (dao *sessionDao) updateBySessionId(sessionID string, contents string, lastActiveTime int64) (int64, error) {
+func (dao *sessionDao) updateBySessionID(sessionID string, contents string, lastActiveTime int64) (int64, error) {
 	sqlStr := fmt.Sprintf("UPDATE %s SET contents=?,last_active=? WHERE session_id=?", dao.tableName)
 	return dao.execute(sqlStr, contents, lastActiveTime, sessionID)
 }
 
 // delete session by sessionID
-func (dao *sessionDao) deleteBySessionId(sessionID string) (int64, error) {
+func (dao *sessionDao) deleteBySessionID(sessionID string) (int64, error) {
 	sqlStr := fmt.Sprintf("DELETE FROM %s WHERE session_id=?", dao.tableName)
 	return dao.execute(sqlStr, sessionID)
 }

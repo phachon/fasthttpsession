@@ -5,8 +5,7 @@ import (
 	"net/url"
 )
 
-// session mysql config
-
+// Config session mysql config
 type Config struct {
 
 	// mysql server host
@@ -55,6 +54,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// NewConfigWith instance new config with especific paremters
 func NewConfigWith(host string, port int, user, pass, dbName, tableName string) (cf *Config) {
 	cf = NewDefaultConfig()
 	cf.Host = host
@@ -66,6 +66,7 @@ func NewConfigWith(host string, port int, user, pass, dbName, tableName string) 
 	return
 }
 
+// NewDefaultConfig return default config instance
 func NewDefaultConfig() *Config {
 	return &Config{
 		Charset:        "utf8",
@@ -99,6 +100,7 @@ func (mc *Config) getMysqlDSN() string {
 		url.QueryEscape(mc.Collate))
 }
 
+// Name return provider name
 func (mc *Config) Name() string {
 	return ProviderName
 }

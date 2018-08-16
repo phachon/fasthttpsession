@@ -22,6 +22,7 @@ import (
 // ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session table';
 //
 
+// ProviderName mysql provider name
 const ProviderName = "mysql"
 
 var (
@@ -29,6 +30,7 @@ var (
 	encrypt  = fasthttpsession.NewEncrypt()
 )
 
+// Provider provider struct
 type Provider struct {
 	config      *Config
 	values      *fasthttpsession.CCMap
@@ -36,7 +38,7 @@ type Provider struct {
 	maxLifeTime int64
 }
 
-// new mysql provider
+// NewProvider new mysql provider
 func NewProvider() *Provider {
 	return &Provider{
 		config:     &Config{},
@@ -45,7 +47,7 @@ func NewProvider() *Provider {
 	}
 }
 
-// init provider config
+// Init init provider config
 func (mp *Provider) Init(lifeTime int64, mysqlConfig fasthttpsession.ProviderConfig) error {
 	if mysqlConfig.Name() != ProviderName {
 		return errors.New("session mysql provider init error, config must mysql config")
@@ -81,20 +83,20 @@ func (mp *Provider) Init(lifeTime int64, mysqlConfig fasthttpsession.ProviderCon
 	return sessionDao.mysqlConn.Ping()
 }
 
-// not need gc
+// NeedGC not need gc
 func (mp *Provider) NeedGC() bool {
 	return true
 }
 
-// session mysql provider not need garbage collection
+// GC session mysql provider not need garbage collection
 func (mp *Provider) GC() {
 	mp.sessionDao.deleteSessionByMaxLifeTime(mp.maxLifeTime)
 }
 
-// read session store by session id
+// ReadStore read session store by session id
 func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := mp.sessionDao.getSessionBySessionId(sessionID)
+	sessionValue, err := mp.sessionDao.getSessionBySessionID(sessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,10 +119,10 @@ func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, e
 	return NewMysqlStoreData(sessionID, data), nil
 }
 
-// regenerate session
+// Regenerate regenerate session
 func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := mp.sessionDao.getSessionBySessionId(oldSessionId)
+	sessionValue, err := mp.sessionDao.getSessionBySessionID(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +136,7 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	}
 
 	// delete old session
-	_, err = mp.sessionDao.deleteBySessionId(oldSessionId)
+	_, err = mp.sessionDao.deleteBySessionID(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
@@ -147,13 +149,13 @@ func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	return mp.ReadStore(sessionID)
 }
 
-// destroy session by sessionID
+// Destroy destroy session by sessionID
 func (mp *Provider) Destroy(sessionID string) error {
-	_, err := mp.sessionDao.deleteBySessionId(sessionID)
+	_, err := mp.sessionDao.deleteBySessionID(sessionID)
 	return err
 }
 
-// session values count
+// Count session values count
 func (mp *Provider) Count() int {
 	return mp.sessionDao.countSessions()
 }

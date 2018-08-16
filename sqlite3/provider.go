@@ -22,6 +22,7 @@ import (
 //  create index last_active on session (last_active);
 //
 
+// ProviderName sqlite provider name
 const ProviderName = "sqlite3"
 
 var (
@@ -29,6 +30,7 @@ var (
 	encrypt  = fasthttpsession.NewEncrypt()
 )
 
+// Provider provider struct
 type Provider struct {
 	config      *Config
 	values      *fasthttpsession.CCMap
@@ -91,7 +93,7 @@ func (sp *Provider) GC() {
 // ReadStore read session store by session id
 func (sp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := sp.sessionDao.getSessionBySessionId(sessionID)
+	sessionValue, err := sp.sessionDao.getSessionBySessionID(sessionID)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +119,7 @@ func (sp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, e
 // Regenerate regenerate session
 func (sp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 
-	sessionValue, err := sp.sessionDao.getSessionBySessionId(oldSessionId)
+	sessionValue, err := sp.sessionDao.getSessionBySessionID(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +133,7 @@ func (sp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 	}
 
 	// delete old session
-	_, err = sp.sessionDao.deleteBySessionId(oldSessionId)
+	_, err = sp.sessionDao.deleteBySessionID(oldSessionId)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +148,7 @@ func (sp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttps
 
 // Destroy destroy session by sessionID
 func (sp *Provider) Destroy(sessionID string) error {
-	_, err := sp.sessionDao.deleteBySessionId(sessionID)
+	_, err := sp.sessionDao.deleteBySessionID(sessionID)
 	return err
 }
 
