@@ -43,8 +43,8 @@ func NewSession(cfg *Config) *Session {
 	if cfg.SessionLifetime == 0 {
 		cfg.SessionLifetime = cfg.GCLifetime
 	}
-	if cfg.SessionIdGeneratorFunc == nil {
-		cfg.SessionIdGeneratorFunc = cfg.defaultSessionIdGenerator
+	if cfg.SessionIDGeneratorFunc == nil {
+		cfg.SessionIDGeneratorFunc = cfg.defaultSessionIDGenerator
 	}
 
 	session := &Session{
@@ -105,7 +105,7 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 	sessionID := s.GetSessionID(ctx)
 	if sessionID == "" {
 		// new generator session id
-		sessionID = s.config.SessionIdGenerator()
+		sessionID = s.config.SessionIDGenerator()
 		if sessionID == "" {
 			return sessionStore, errors.New("session generator sessionID is empty")
 		}
@@ -127,9 +127,9 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 		s.config.Expires,
 		s.config.Secure)
 
-	if s.config.SessionIdInHttpHeader {
-		ctx.Request.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
-		ctx.Response.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
+	if s.config.SessionIDInHTTPHeader {
+		ctx.Request.Header.Set(s.config.SessionNameInHTTPHeader, sessionID)
+		ctx.Response.Header.Set(s.config.SessionNameInHTTPHeader, sessionID)
 	}
 
 	return
@@ -146,15 +146,15 @@ func (s *Session) GetSessionID(ctx *fasthttp.RequestCtx) string {
 		return s.config.Decode(string(cookieByte))
 	}
 
-	if s.config.SessionIdInURLQuery {
-		cookieFormValue := ctx.FormValue(s.config.SessionNameInUrlQuery)
+	if s.config.SessionIDInURLQuery {
+		cookieFormValue := ctx.FormValue(s.config.SessionNameInURLQuery)
 		if len(cookieFormValue) > 0 {
 			return s.config.Decode(string(cookieFormValue))
 		}
 	}
 
-	if s.config.SessionIdInHttpHeader {
-		cookieHeader := ctx.Request.Header.Peek(s.config.SessionNameInHttpHeader)
+	if s.config.SessionIDInHTTPHeader {
+		cookieHeader := ctx.Request.Header.Peek(s.config.SessionNameInHTTPHeader)
 		if len(cookieHeader) > 0 {
 			return s.config.Decode(string(cookieHeader))
 		}
@@ -171,7 +171,7 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 	}
 
 	// generator new session id
-	sessionID := s.config.SessionIdGenerator()
+	sessionID := s.config.SessionIDGenerator()
 	if sessionID == "" {
 		return sessionStore, errors.New("session generator sessionID is empty")
 	}
@@ -198,9 +198,9 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 		s.config.Secure)
 
 	// reset http header
-	if s.config.SessionIdInHttpHeader {
-		ctx.Request.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
-		ctx.Response.Header.Set(s.config.SessionNameInHttpHeader, sessionID)
+	if s.config.SessionIDInHTTPHeader {
+		ctx.Request.Header.Set(s.config.SessionNameInHTTPHeader, sessionID)
+		ctx.Response.Header.Set(s.config.SessionNameInHTTPHeader, sessionID)
 	}
 
 	return
@@ -210,9 +210,9 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 
 	// delete header if sessionID in http Header
-	if s.config.SessionIdInHttpHeader {
-		ctx.Request.Header.Del(s.config.SessionNameInHttpHeader)
-		ctx.Response.Header.Del(s.config.SessionNameInHttpHeader)
+	if s.config.SessionIDInHTTPHeader {
+		ctx.Request.Header.Del(s.config.SessionNameInHTTPHeader)
+		ctx.Response.Header.Del(s.config.SessionNameInHTTPHeader)
 	}
 
 	cookieValue := s.cookie.Get(ctx, s.config.CookieName)

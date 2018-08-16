@@ -8,13 +8,11 @@ import (
 
 var (
 	defaultCookieName = "fasthttpsessionid"
-
-	defaultExpires = time.Hour * 2
-
+	defaultExpires    = time.Hour * 2
 	defaultGCLifetime = int64(3)
 )
 
-// NewDefaultConfig new default config
+// NewDefaultConfig return new default config
 func NewDefaultConfig() *Config {
 	config := &Config{
 		CookieName:              defaultCookieName,
@@ -23,18 +21,19 @@ func NewDefaultConfig() *Config {
 		GCLifetime:              defaultGCLifetime,
 		SessionLifetime:         60,
 		Secure:                  true,
-		SessionIdInURLQuery:     false,
-		SessionNameInUrlQuery:   "",
-		SessionIdInHttpHeader:   false,
-		SessionNameInHttpHeader: "",
+		SessionIDInURLQuery:     false,
+		SessionNameInURLQuery:   "",
+		SessionIDInHTTPHeader:   false,
+		SessionNameInHTTPHeader: "",
 	}
 
 	// default sessionIdGeneratorFunc
-	config.SessionIdGeneratorFunc = config.defaultSessionIdGenerator
+	config.SessionIDGeneratorFunc = config.defaultSessionIDGenerator
 
 	return config
 }
 
+// Config config struct
 type Config struct {
 
 	// cookie name
@@ -60,19 +59,19 @@ type Config struct {
 	Secure bool
 
 	// sessionID is in url query
-	SessionIdInURLQuery bool
+	SessionIDInURLQuery bool
 
 	// sessionName in url query
-	SessionNameInUrlQuery string
+	SessionNameInURLQuery string
 
 	// sessionID is in http header
-	SessionIdInHttpHeader bool
+	SessionIDInHTTPHeader bool
 
 	// sessionName in http header
-	SessionNameInHttpHeader string
+	SessionNameInHTTPHeader string
 
-	// SessionIdGeneratorFunc should returns a random session id.
-	SessionIdGeneratorFunc func() string
+	// SessionIDGeneratorFunc should returns a random session id.
+	SessionIDGeneratorFunc func() string
 
 	// Encode the cookie value if not nil.
 	EncodeFunc func(cookieValue string) (string, error)
@@ -81,18 +80,18 @@ type Config struct {
 	DecodeFunc func(cookieValue string) (string, error)
 }
 
-// SessionIdGenerator sessionID generator
-func (c *Config) SessionIdGenerator() string {
-	sessionIdGenerator := c.SessionIdGeneratorFunc
-	if sessionIdGenerator == nil {
-		return c.defaultSessionIdGenerator()
+// SessionIDGenerator sessionID generator
+func (c *Config) SessionIDGenerator() string {
+	sessionIDGenerator := c.SessionIDGeneratorFunc
+	if sessionIDGenerator == nil {
+		return c.defaultSessionIDGenerator()
 	}
 
-	return sessionIdGenerator()
+	return sessionIDGenerator()
 }
 
 // default sessionID generator => uuid
-func (c *Config) defaultSessionIdGenerator() string {
+func (c *Config) defaultSessionIDGenerator() string {
 	return uuid.NewV4().String()
 }
 

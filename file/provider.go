@@ -52,10 +52,10 @@ func (fp *Provider) Init(lifeTime int64, fileConfig fasthttpsession.ProviderConf
 		return errors.New("session file provider init error, config savePath not empty")
 	}
 	if fp.config.SerializeFunc == nil {
-		fp.config.SerializeFunc = encrypt.GobEncode
+		fp.config.SerializeFunc = encrypt.GOBEncode
 	}
 	if fp.config.UnSerializeFunc == nil {
-		fp.config.UnSerializeFunc = encrypt.GobDecode
+		fp.config.UnSerializeFunc = encrypt.GOBDecode
 	}
 
 	fp.maxLifeTime = lifeTime

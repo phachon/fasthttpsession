@@ -58,10 +58,10 @@ func (rp *Provider) Init(lifeTime int64, redisConfig fasthttpsession.ProviderCon
 	}
 	// init config serialize func
 	if rp.config.SerializeFunc == nil {
-		rp.config.SerializeFunc = encrypt.GobEncode
+		rp.config.SerializeFunc = encrypt.GOBEncode
 	}
 	if rp.config.UnSerializeFunc == nil {
-		rp.config.UnSerializeFunc = encrypt.GobDecode
+		rp.config.UnSerializeFunc = encrypt.GOBDecode
 	}
 	// create redis conn pool
 	rp.redisPool = newRedisPool(rp.config)

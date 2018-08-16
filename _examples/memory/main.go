@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/savsgio/fasthttpsession/memory"
 	"github.com/savsgio/fasthttpsession"
+	"github.com/savsgio/fasthttpsession/memory"
 	"github.com/valyala/fasthttp"
 )
 
@@ -22,11 +22,11 @@ var session = fasthttpsession.NewSession(fasthttpsession.NewDefaultConfig())
 //	GCLifetime: 3,
 //	SessionLifetime: 60,
 //	Secure: true,
-//	SessionIdInURLQuery: false,
-//	SessionNameInUrlQuery: "",
-//	SessionIdInHttpHeader: false,
-//	SessionNameInHttpHeader: "",
-//	SessionIdGeneratorFunc: func() string {return ""},
+//	SessionIDInURLQuery: false,
+//	SessionNameInURLQuery: "",
+//	SessionIDInHTTPHeader: false,
+//	SessionNameInHTTPHeader: "",
+//	SessionIDGeneratorFunc: func() string {return ""},
 //	EncodeFunc: func(cookieValue string) (string, error) {return "", nil},
 //	DecodeFunc: func(cookieValue string) (string, error) {return "", nil},
 //})

@@ -51,10 +51,10 @@ func (mcp *Provider) Init(lifeTime int64, memCacheConfig fasthttpsession.Provide
 	}
 	// init config serialize func
 	if mcp.config.SerializeFunc == nil {
-		mcp.config.SerializeFunc = encrypt.GobEncode
+		mcp.config.SerializeFunc = encrypt.GOBEncode
 	}
 	if mcp.config.UnSerializeFunc == nil {
-		mcp.config.UnSerializeFunc = encrypt.GobDecode
+		mcp.config.UnSerializeFunc = encrypt.GOBDecode
 	}
 	// create memcache client
 	mcp.memCacheClient = memcache.New(mcp.config.ServerList...)

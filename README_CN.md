@@ -122,19 +122,19 @@ type Config struct {
 	Secure bool
 	
 	// sessionID is in url query
-	SessionIdInURLQuery bool
+	SessionIDInURLQuery bool
 	
 	// sessionName in url query
-	SessionNameInUrlQuery string
+	SessionNameInURLQuery string
 	
 	// sessionID is in http header
-	SessionIdInHttpHeader bool
+	SessionIDInHTTPHeader bool
 	
 	// sessionName in http header
-	SessionNameInHttpHeader string
+	SessionNameInHTTPHeader string
 	
-	// SessionIdGeneratorFunc should returns a random session id.
-	SessionIdGeneratorFunc func() string
+	// SessionIDGeneratorFunc should returns a random session id.
+	SessionIDGeneratorFunc func() string
 	
 	// Encode the cookie value if not nil.
 	EncodeFunc func(cookieValue string) (string, error)

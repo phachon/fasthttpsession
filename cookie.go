@@ -6,11 +6,13 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+// Cookie cookie struct
+type Cookie struct{}
+
+// NewCookie return new cookie instance
 func NewCookie() *Cookie {
 	return &Cookie{}
 }
-
-type Cookie struct{}
 
 // Get get cookie by name
 func (c *Cookie) Get(ctx *fasthttp.RequestCtx, name string) (value string) {

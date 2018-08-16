@@ -183,7 +183,7 @@ func (c *CCMap) Keys() []string {
 	for i := 0; i < c.sliceNumber; i++ {
 		sliceMap := c.values[i]
 		sliceMap.lock.RLock()
-		for key, _ := range sliceMap.items {
+		for key := range sliceMap.items {
 			data = append(data, key)
 		}
 		sliceMap.lock.RUnlock()
