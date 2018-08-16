@@ -10,6 +10,7 @@ import (
 
 // session redis provider
 
+// ProviderName redis provider name
 const ProviderName = "redis"
 
 var (
@@ -17,6 +18,7 @@ var (
 	encrypt  = fasthttpsession.NewEncrypt()
 )
 
+// Provider provider struct
 type Provider struct {
 	config      *Config
 	values      *fasthttpsession.CCMap

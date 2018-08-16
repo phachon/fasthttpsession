@@ -8,25 +8,26 @@ import (
 
 // session memCache store
 
-// new default memCache store
+// NewMemCacheStore new default memCache store
 func NewMemCacheStore(sessionID string) *Store {
 	memCacheStore := &Store{}
 	memCacheStore.Init(sessionID, make(map[string]interface{}))
 	return memCacheStore
 }
 
-// new memCache store data
+// NewMemCacheStoreData new memCache store data
 func NewMemCacheStoreData(sessionID string, data map[string]interface{}) *Store {
 	memCacheStore := &Store{}
 	memCacheStore.Init(sessionID, data)
 	return memCacheStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (mcs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	value, err := provider.config.SerializeFunc(mcs.GetAll())

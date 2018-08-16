@@ -1,5 +1,6 @@
 package fasthttpsession
 
+// Provider provider interface
 type Provider interface {
 	Init(int64, ProviderConfig) error
 	NeedGC() bool
@@ -10,6 +11,7 @@ type Provider interface {
 	Count() int
 }
 
+// ProviderConfig provider config interface
 type ProviderConfig interface {
 	Name() string
 }
