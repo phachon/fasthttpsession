@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/savsgio/fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
 )
 

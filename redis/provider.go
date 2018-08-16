@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/savsgio/fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 )
 
 // session redis provider

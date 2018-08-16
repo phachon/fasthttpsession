@@ -1,10 +1,10 @@
-[![logo](./logo.png)](https://github.com/savsgio/fasthttpsession)
+[![logo](./logo.png)](https://github.com/phachon/fasthttpsession)
 
 [![build](https://img.shields.io/shippable/5444c5ecb904a4b21567b0ff.svg)](https://travis-ci.org/phachon/fasthttpsession)
-[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/savsgio/fasthttpsession)
+[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/phachon/fasthttpsession)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/phachon/fasthttpsession/master/LICENSE)
-[![go_Report](https://goreportcard.com/badge/github.com/savsgio/fasthttpsession)](https://goreportcard.com/report/github.com/savsgio/fasthttpsession)
-[![release](https://img.shields.io/github/release/phachon/fasthttpsession.svg?style=flat)](https://github.com/savsgio/fasthttpsession/releases) 
+[![go_Report](https://goreportcard.com/badge/github.com/phachon/fasthttpsession)](https://goreportcard.com/report/github.com/phachon/fasthttpsession)
+[![release](https://img.shields.io/github/release/phachon/fasthttpsession.svg?style=flat)](https://github.com/phachon/fasthttpsession/releases) 
 [![powered_by](https://img.shields.io/badge/powered_by-Go-3362c2.svg?style=flat)]()
 [![platforms](https://img.shields.io/badge/platform-All-yellow.svg?style=flat)]()
 
@@ -37,7 +37,7 @@ fasthttpsession is a session manager for Go. It only supports [fasthttp](https:/
 The only requirement is the Go Programming Language, at least v1.7
 
 ```shell
-$ go get -u github.com/savsgio/fasthttpsession
+$ go get -u github.com/phachon/fasthttpsession
 $ go get ./...
 ```
 
@@ -49,8 +49,8 @@ $ go get ./...
 // fasthttpsession use memory provider
 
 import (
-	"github.com/savsgio/fasthttpsession"
-	"github.com/savsgio/fasthttpsession/memory"
+	"github.com/phachon/fasthttpsession"
+	"github.com/phachon/fasthttpsession/memory"
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
@@ -148,7 +148,7 @@ Different session provider config, please look at the Config.go the provider nam
 
 # Documents
 
-Document address: [http://godoc.org/github.com/savsgio/fasthttpsession](http://godoc.org/github.com/savsgio/fasthttpsession)
+Document address: [http://godoc.org/github.com/phachon/fasthttpsession](http://godoc.org/github.com/phachon/fasthttpsession)
 
 # Example
 
@@ -156,10 +156,10 @@ Document address: [http://godoc.org/github.com/savsgio/fasthttpsession](http://g
 
 ## Feedback
 
-- If you like the project, please [Start](https://github.com/savsgio/fasthttpsession/stargazers).
-- If you have any problems in the process of use, welcome submit [Issue](https://github.com/savsgio/fasthttpsession/issues).
-- If you find and solve bug, welcome submit [Pull Request](https://github.com/savsgio/fasthttpsession/pulls).
-- If you want to expand session provider, welcome [Fork](https://github.com/savsgio/fasthttpsession/network/members) and merge this rep.
+- If you like the project, please [Start](https://github.com/phachon/fasthttpsession/stargazers).
+- If you have any problems in the process of use, welcome submit [Issue](https://github.com/phachon/fasthttpsession/issues).
+- If you find and solve bug, welcome submit [Pull Request](https://github.com/phachon/fasthttpsession/pulls).
+- If you want to expand session provider, welcome [Fork](https://github.com/phachon/fasthttpsession/network/members) and merge this rep.
 - If you want to make a friend, welcome send email to [phachon@163.com](mailto:phachon@163.com).
 
 ## License

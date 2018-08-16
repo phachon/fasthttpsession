@@ -3,7 +3,7 @@ package sqlite3
 import (
 	"time"
 
-	"github.com/savsgio/fasthttpsession"
+	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
 )
 

@@ -1,10 +1,10 @@
-[![logo](./logo.png)](https://github.com/savsgio/fasthttpsession)
+[![logo](./logo.png)](https://github.com/phachon/fasthttpsession)
 
 [![build](https://img.shields.io/shippable/5444c5ecb904a4b21567b0ff.svg)](https://travis-ci.org/phachon/fasthttpsession)
-[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/savsgio/fasthttpsession)
+[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/phachon/fasthttpsession)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/phachon/fasthttpsession/master/LICENSE)
-[![go_Report](https://goreportcard.com/badge/github.com/savsgio/fasthttpsession)](https://goreportcard.com/report/github.com/savsgio/fasthttpsession)
-[![release](https://img.shields.io/github/release/phachon/fasthttpsession.svg?style=flat)](https://github.com/savsgio/fasthttpsession/releases) 
+[![go_Report](https://goreportcard.com/badge/github.com/phachon/fasthttpsession)](https://goreportcard.com/report/github.com/phachon/fasthttpsession)
+[![release](https://img.shields.io/github/release/phachon/fasthttpsession.svg?style=flat)](https://github.com/phachon/fasthttpsession/releases) 
 [![powered_by](https://img.shields.io/badge/powered_by-Go-3362c2.svg?style=flat)]()
 [![platforms](https://img.shields.io/badge/platform-All-yellow.svg?style=flat)]()
 
@@ -37,7 +37,7 @@ fasthttpsession 是 Go 实现的一个 session 管理器。它只能用于 [fast
 要求是 Go 至少是 v1.7。
 
 ```shell
-$ go get -u github.com/savsgio/fasthttpsession
+$ go get -u github.com/phachon/fasthttpsession
 $ go get ./...
 ```
 
@@ -49,8 +49,8 @@ $ go get ./...
 // fasthttpsession use memory provider
 
 import (
-	"github.com/savsgio/fasthttpsession"
-	"github.com/savsgio/fasthttpsession/memory"
+	"github.com/phachon/fasthttpsession"
+	"github.com/phachon/fasthttpsession/memory"
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
@@ -148,7 +148,7 @@ type Config struct {
 
 # 文档
 
-文档地址: [http://godoc.org/github.com/savsgio/fasthttpsession](http://godoc.org/github.com/savsgio/fasthttpsession)
+文档地址: [http://godoc.org/github.com/phachon/fasthttpsession](http://godoc.org/github.com/phachon/fasthttpsession)
 
 # 示例
 
@@ -156,10 +156,10 @@ type Config struct {
 
 ## 反馈
 
-- 如果您喜欢该项目，请 [Start](https://github.com/savsgio/fasthttpsession/stargazers).
-- 如果在使用过程中有任何问题， 请提交 [Issue](https://github.com/savsgio/fasthttpsession/issues).
-- 如果您发现并解决了bug，请提交 [Pull Request](https://github.com/savsgio/fasthttpsession/pulls).
-- 如果您想扩展 session 存储，欢迎 [Fork](https://github.com/savsgio/fasthttpsession/network/members) and merge this rep.
+- 如果您喜欢该项目，请 [Start](https://github.com/phachon/fasthttpsession/stargazers).
+- 如果在使用过程中有任何问题， 请提交 [Issue](https://github.com/phachon/fasthttpsession/issues).
+- 如果您发现并解决了bug，请提交 [Pull Request](https://github.com/phachon/fasthttpsession/pulls).
+- 如果您想扩展 session 存储，欢迎 [Fork](https://github.com/phachon/fasthttpsession/network/members) and merge this rep.
 - 如果你想交个朋友，欢迎发邮件给 [phachon@163.com](mailto:phachon@163.com).
 
 ## License
