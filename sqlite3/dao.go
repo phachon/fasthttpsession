@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	// Import sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 )
 
