@@ -2,10 +2,10 @@ package memory
 
 // session memory config
 
-type Config struct {
+// Config session memoryh config
+type Config struct{}
 
-}
-
+// Name return provider name
 func (mc *Config) Name() string {
 	return ProviderName
 }

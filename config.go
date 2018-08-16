@@ -1,40 +1,39 @@
 package fasthttpsession
 
 import (
-	"github.com/satori/go.uuid"
 	"time"
+
+	"github.com/satori/go.uuid"
 )
 
 var (
-
 	defaultCookieName = "fasthttpsessionid"
-
-	defaultExpires = time.Hour * 2
-
+	defaultExpires    = time.Hour * 2
 	defaultGCLifetime = int64(3)
 )
 
-// new default config
+// NewDefaultConfig return new default config
 func NewDefaultConfig() *Config {
 	config := &Config{
-		CookieName: defaultCookieName,
-		Domain: "",
-		Expires: defaultExpires,
-		GCLifetime: defaultGCLifetime,
-		SessionLifetime: 60,
-		Secure: true,
-		SessionIdInURLQuery: false,
-		SessionNameInUrlQuery: "",
-		SessionIdInHttpHeader: false,
-		SessionNameInHttpHeader: "",
+		CookieName:              defaultCookieName,
+		Domain:                  "",
+		Expires:                 defaultExpires,
+		GCLifetime:              defaultGCLifetime,
+		SessionLifetime:         60,
+		Secure:                  true,
+		SessionIDInURLQuery:     false,
+		SessionNameInURLQuery:   "",
+		SessionIDInHTTPHeader:   false,
+		SessionNameInHTTPHeader: "",
 	}
 
 	// default sessionIdGeneratorFunc
-	config.SessionIdGeneratorFunc = config.defaultSessionIdGenerator
+	config.SessionIDGeneratorFunc = config.defaultSessionIDGenerator
 
 	return config
 }
 
+// Config config struct
 type Config struct {
 
 	// cookie name
@@ -59,49 +58,44 @@ type Config struct {
 	// set whether to pass this bar cookie only through HTTPS
 	Secure bool
 
-	// sessionId is in url query
-	SessionIdInURLQuery bool
+	// sessionID is in url query
+	SessionIDInURLQuery bool
 
 	// sessionName in url query
-	SessionNameInUrlQuery string
+	SessionNameInURLQuery string
 
-	// sessionId is in http header
-	SessionIdInHttpHeader bool
+	// sessionID is in http header
+	SessionIDInHTTPHeader bool
 
 	// sessionName in http header
-	SessionNameInHttpHeader string
+	SessionNameInHTTPHeader string
 
-	// SessionIdGeneratorFunc should returns a random session id.
-	SessionIdGeneratorFunc func() string
+	// SessionIDGeneratorFunc should returns a random session id.
+	SessionIDGeneratorFunc func() string
 
 	// Encode the cookie value if not nil.
 	EncodeFunc func(cookieValue string) (string, error)
 
 	// Decode the cookie value if not nil.
 	DecodeFunc func(cookieValue string) (string, error)
-
 }
 
-// sessionId generator
-func (c *Config) SessionIdGenerator() string {
-	sessionIdGenerator := c.SessionIdGeneratorFunc
-	if sessionIdGenerator == nil {
-		return c.defaultSessionIdGenerator()
+// SessionIDGenerator sessionID generator
+func (c *Config) SessionIDGenerator() string {
+	sessionIDGenerator := c.SessionIDGeneratorFunc
+	if sessionIDGenerator == nil {
+		return c.defaultSessionIDGenerator()
 	}
 
-	return sessionIdGenerator()
+	return sessionIDGenerator()
 }
 
-// default sessionId generator => uuid
-func (c *Config) defaultSessionIdGenerator() string {
-	id, err := uuid.NewV4()
-	if err != nil {
-		return ""
-	}
-	return id.String()
+// default sessionID generator => uuid
+func (c *Config) defaultSessionIDGenerator() string {
+	return uuid.NewV4().String()
 }
 
-// encode cookie value
+// Encode encode cookie value
 func (c *Config) Encode(cookieValue string) string {
 	encode := c.EncodeFunc
 	if encode != nil {
@@ -115,7 +109,7 @@ func (c *Config) Encode(cookieValue string) string {
 	return cookieValue
 }
 
-// decode cookie value
+// Decode decode cookie value
 func (c *Config) Decode(cookieValue string) string {
 	if cookieValue == "" {
 		return ""

@@ -1,7 +1,6 @@
 package memcache
 
-// session memcache config
-
+// Config session memcache config
 type Config struct {
 
 	// memcache server list
@@ -15,7 +14,7 @@ type Config struct {
 	// be set to a number higher than your peak parallel requests.
 	MaxIdle int
 
-	// sessionId as memcache key prefix
+	// sessionID as memcache key prefix
 	KeyPrefix string
 
 	// session value serialize func
@@ -25,6 +24,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// Name return provider name
 func (mc *Config) Name() string {
 	return ProviderName
 }

@@ -1,42 +1,44 @@
 package postgres
 
 import (
+	"time"
+
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
-	"time"
 )
 
 // session postgres store
 
-// new default postgres store
-func NewPostgresStore(sessionId string) *Store {
+// NewPostgresStore new default postgres store
+func NewPostgresStore(sessionID string) *Store {
 	postgresStore := &Store{}
-	postgresStore.Init(sessionId, make(map[string]interface{}))
+	postgresStore.Init(sessionID, make(map[string]interface{}))
 	return postgresStore
 }
 
-// new postgres store data
-func NewPostgresStoreData(sessionId string, data map[string]interface{}) *Store {
+// NewPostgresStoreData new postgres store data
+func NewPostgresStoreData(sessionID string, data map[string]interface{}) *Store {
 	postgresStore := &Store{}
-	postgresStore.Init(sessionId, data)
+	postgresStore.Init(sessionID, data)
 	return postgresStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (ps *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	b, err := provider.config.SerializeFunc(ps.GetAll())
 	if err != nil {
 		return err
 	}
-	session, err := provider.sessionDao.getSessionBySessionId(ps.GetSessionId())
+	session, err := provider.sessionDao.getSessionBySessionID(ps.GetSessionID())
 	if err != nil || len(session) == 0 {
 		return nil
 	}
-	_, err = provider.sessionDao.updateBySessionId(ps.GetSessionId(), string(b), time.Now().Unix())
+	_, err = provider.sessionDao.updateBySessionID(ps.GetSessionID(), string(b), time.Now().Unix())
 	return err
 }

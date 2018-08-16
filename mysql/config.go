@@ -5,8 +5,7 @@ import (
 	"net/url"
 )
 
-// session mysql config
-
+// Config session mysql config
 type Config struct {
 
 	// mysql server host
@@ -22,10 +21,10 @@ type Config struct {
 	Password string
 
 	// mysql conn charset
-	Charset  string
+	Charset string
 
 	// mysql Collate
-	Collate  string
+	Collate string
 
 	// database name
 	Database string
@@ -55,6 +54,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// NewConfigWith instance new config with especific paremters
 func NewConfigWith(host string, port int, user, pass, dbName, tableName string) (cf *Config) {
 	cf = NewDefaultConfig()
 	cf.Host = host
@@ -66,19 +66,20 @@ func NewConfigWith(host string, port int, user, pass, dbName, tableName string) 
 	return
 }
 
+// NewDefaultConfig return default config instance
 func NewDefaultConfig() *Config {
 	return &Config{
-		Charset: "utf8",
-		Collate: "utf8_general_ci",
-		Database: "test",
-		TableName: "test",
-		Host: "127.0.0.1",
-		Port:  3306,
-		Username: "root",
-		Password: "",
-		Timeout:  3000,
-		ReadTimeout: 5000,
-		WriteTimeout: 5000,
+		Charset:        "utf8",
+		Collate:        "utf8_general_ci",
+		Database:       "test",
+		TableName:      "test",
+		Host:           "127.0.0.1",
+		Port:           3306,
+		Username:       "root",
+		Password:       "",
+		Timeout:        3000,
+		ReadTimeout:    5000,
+		WriteTimeout:   5000,
 		SetMaxOpenConn: 500,
 		SetMaxIdleConn: 50,
 	}
@@ -99,6 +100,7 @@ func (mc *Config) getMysqlDSN() string {
 		url.QueryEscape(mc.Collate))
 }
 
+// Name return provider name
 func (mc *Config) Name() string {
 	return ProviderName
 }

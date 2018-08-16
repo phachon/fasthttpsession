@@ -1,42 +1,44 @@
 package mysql
 
 import (
+	"time"
+
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
-	"time"
 )
 
 // session mysql store
 
-// new default mysql store
-func NewMysqlStore(sessionId string) *Store {
+// NewMysqlStore new default mysql store
+func NewMysqlStore(sessionID string) *Store {
 	mysqlStore := &Store{}
-	mysqlStore.Init(sessionId, make(map[string]interface{}))
+	mysqlStore.Init(sessionID, make(map[string]interface{}))
 	return mysqlStore
 }
 
-// new mysql store data
-func NewMysqlStoreData(sessionId string, data map[string]interface{}) *Store {
+// NewMysqlStoreData new mysql store data
+func NewMysqlStoreData(sessionID string, data map[string]interface{}) *Store {
 	mysqlStore := &Store{}
-	mysqlStore.Init(sessionId, data)
+	mysqlStore.Init(sessionID, data)
 	return mysqlStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (ms *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	b, err := provider.config.SerializeFunc(ms.GetAll())
 	if err != nil {
 		return err
 	}
-	session, err := provider.sessionDao.getSessionBySessionId(ms.GetSessionId())
+	session, err := provider.sessionDao.getSessionBySessionID(ms.GetSessionID())
 	if err != nil || len(session) == 0 {
 		return nil
 	}
-	_, err = provider.sessionDao.updateBySessionId(ms.GetSessionId(), string(b), time.Now().Unix())
+	_, err = provider.sessionDao.updateBySessionID(ms.GetSessionID(), string(b), time.Now().Unix())
 	return err
 }

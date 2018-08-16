@@ -7,25 +7,26 @@ import (
 
 // session redis store
 
-// new default redis store
-func NewRedisStore(sessionId string) *Store {
+// NewRedisStore new default redis store
+func NewRedisStore(sessionID string) *Store {
 	redisStore := &Store{}
-	redisStore.Init(sessionId, make(map[string]interface{}))
+	redisStore.Init(sessionID, make(map[string]interface{}))
 	return redisStore
 }
 
-// new redis store data
-func NewRedisStoreData(sessionId string, data map[string]interface{}) *Store {
+// NewRedisStoreData new redis store data
+func NewRedisStoreData(sessionID string, data map[string]interface{}) *Store {
 	redisStore := &Store{}
-	redisStore.Init(sessionId, data)
+	redisStore.Init(sessionID, data)
 	return redisStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (rs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	b, err := provider.config.SerializeFunc(rs.GetAll())
@@ -34,7 +35,7 @@ func (rs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	}
 	conn := provider.redisPool.Get()
 	defer conn.Close()
-	conn.Do("SETEX", provider.getRedisSessionKey(rs.GetSessionId()), provider.maxLifeTime, string(b))
+	conn.Do("SETEX", provider.getRedisSessionKey(rs.GetSessionID()), provider.maxLifeTime, string(b))
 
 	return nil
 }

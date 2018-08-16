@@ -1,7 +1,6 @@
 package redis
 
-// session redis config
-
+// Config session redis config
 type Config struct {
 
 	// Redis server host
@@ -25,7 +24,7 @@ type Config struct {
 	// select db number, default 0
 	DbNumber int
 
-	// sessionId as redis key prefix
+	// sessionID as redis key prefix
 	KeyPrefix string
 
 	// session value serialize func
@@ -35,6 +34,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// Name return provider name
 func (mc *Config) Name() string {
 	return ProviderName
 }

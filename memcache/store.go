@@ -1,32 +1,33 @@
 package memcache
 
 import (
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/phachon/fasthttpsession"
 	"github.com/valyala/fasthttp"
-	"github.com/bradfitz/gomemcache/memcache"
 )
 
 // session memCache store
 
-// new default memCache store
-func NewMemCacheStore(sessionId string) *Store {
+// NewMemCacheStore new default memCache store
+func NewMemCacheStore(sessionID string) *Store {
 	memCacheStore := &Store{}
-	memCacheStore.Init(sessionId, make(map[string]interface{}))
+	memCacheStore.Init(sessionID, make(map[string]interface{}))
 	return memCacheStore
 }
 
-// new memCache store data
-func NewMemCacheStoreData(sessionId string, data map[string]interface{}) *Store {
+// NewMemCacheStoreData new memCache store data
+func NewMemCacheStoreData(sessionID string, data map[string]interface{}) *Store {
 	memCacheStore := &Store{}
-	memCacheStore.Init(sessionId, data)
+	memCacheStore.Init(sessionID, data)
 	return memCacheStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (mcs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	value, err := provider.config.SerializeFunc(mcs.GetAll())
@@ -35,8 +36,8 @@ func (mcs *Store) Save(ctx *fasthttp.RequestCtx) error {
 	}
 
 	return provider.memCacheClient.Set(&memcache.Item{
-		Key: provider.getMemCacheSessionKey(mcs.GetSessionId()),
-		Value: value,
+		Key:        provider.getMemCacheSessionKey(mcs.GetSessionID()),
+		Value:      value,
 		Expiration: int32(provider.maxLifeTime),
 	})
 }

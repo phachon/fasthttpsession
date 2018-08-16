@@ -1,26 +1,28 @@
 package file
 
 import (
-	"github.com/phachon/fasthttpsession"
-	"github.com/valyala/fasthttp"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/phachon/fasthttpsession"
+	"github.com/valyala/fasthttp"
 )
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (fs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	fileProvider.lock.Lock()
 	defer fileProvider.lock.Unlock()
 
-	sessionId := fs.GetSessionId()
+	sessionID := fs.GetSessionID()
 
-	_, _, fullFileName := fileProvider.getSessionFile(sessionId)
+	_, _, fullFileName := fileProvider.getSessionFile(sessionID)
 
 	if fileProvider.file.pathIsExists(fullFileName) {
 		sessionMap := fs.GetAll()

@@ -1,32 +1,35 @@
 package memory
 
 import (
-	"github.com/phachon/fasthttpsession"
-	"time"
 	"errors"
 	"reflect"
+	"time"
+
+	"github.com/phachon/fasthttpsession"
 )
 
 // session memory provider
 
+// ProviderName memory provider name
 const ProviderName = "memory"
 
+// Provider provider struct
 type Provider struct {
-	config *Config
-	values *fasthttpsession.CCMap
+	config      *Config
+	values      *fasthttpsession.CCMap
 	maxLifeTime int64
 }
 
-// new memory provider
+// NewProvider new memory provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{},
-		values: fasthttpsession.NewDefaultCCMap(),
+		config:      &Config{},
+		values:      fasthttpsession.NewDefaultCCMap(),
 		maxLifeTime: 0,
 	}
 }
 
-// init provider config
+// Init init provider config
 func (mp *Provider) Init(lifeTime int64, memoryConfig fasthttpsession.ProviderConfig) error {
 	if memoryConfig.Name() != ProviderName {
 		return errors.New("session memory provider init error, config must memory config")
@@ -39,66 +42,66 @@ func (mp *Provider) Init(lifeTime int64, memoryConfig fasthttpsession.ProviderCo
 	return nil
 }
 
-// need gc
+// NeedGC need gc
 func (mp *Provider) NeedGC() bool {
 	return true
 }
 
-// session garbage collection
+// GC session garbage collection
 func (mp *Provider) GC() {
-	for sessionId, value := range mp.values.GetAll() {
-		if time.Now().Unix() >= value.(*Store).lastActiveTime + mp.maxLifeTime {
-			// destroy session sessionId
-			mp.Destroy(sessionId)
+	for sessionID, value := range mp.values.GetAll() {
+		if time.Now().Unix() >= value.(*Store).lastActiveTime+mp.maxLifeTime {
+			// destroy session sessionID
+			mp.Destroy(sessionID)
 			return
 		}
 	}
 }
 
-// read session store by session id
-func (mp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
-	memStore := mp.values.Get(sessionId)
+// ReadStore read session store by session id
+func (mp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, error) {
+	memStore := mp.values.Get(sessionID)
 	if memStore != nil {
 		return memStore.(*Store), nil
 	}
 
-	newMemStore := NewMemoryStore(sessionId)
-	mp.values.Set(sessionId, newMemStore)
+	newMemStore := NewMemoryStore(sessionID)
+	mp.values.Set(sessionID, newMemStore)
 
 	return newMemStore, nil
 }
 
-// regenerate session
-func (mp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
+// Regenerate regenerate session
+func (mp *Provider) Regenerate(oldSessionId string, sessionID string) (fasthttpsession.SessionStore, error) {
 	memStoreInter := mp.values.Get(oldSessionId)
 	if memStoreInter != nil {
 		memStore := memStoreInter.(*Store)
 		// insert new session store
-		newMemStore := NewMemoryStoreData(sessionId, memStore.GetAll())
-		mp.values.Set(sessionId, newMemStore)
+		newMemStore := NewMemoryStoreData(sessionID, memStore.GetAll())
+		mp.values.Set(sessionID, newMemStore)
 		// delete old session store
 		mp.values.Delete(oldSessionId)
 		return newMemStore, nil
 	}
 
-	memStore := NewMemoryStore(sessionId)
-	mp.values.Set(sessionId, memStore)
+	memStore := NewMemoryStore(sessionID)
+	mp.values.Set(sessionID, memStore)
 
 	return memStore, nil
 }
 
-// destroy session by sessionId
-func (mp *Provider) Destroy(sessionId string) error {
-	mp.values.Delete(sessionId)
+// Destroy destroy session by sessionID
+func (mp *Provider) Destroy(sessionID string) error {
+	mp.values.Delete(sessionID)
 	return nil
 }
 
-// session values count
+// Count session values count
 func (mp *Provider) Count() int {
 	return mp.values.Count()
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, NewProvider())
 }

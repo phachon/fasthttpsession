@@ -1,36 +1,37 @@
 package fasthttpsession
 
 import (
-	"encoding/json"
-	"encoding/gob"
 	"bytes"
 	"encoding/base64"
+	"encoding/gob"
+	"encoding/json"
 )
 
-// fasthttpsession encrypt tool
+// fasthttpsession Encrypt tool
 // - json
 // - gob
 // - base64
 
 const (
+	// BASE64TABLE base64 table
 	BASE64TABLE = "1234567890poiuytreqwasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM-_"
 )
 
-func NewEncrypt() *encrypt {
-	return &encrypt{}
+// Encrypt encrypt struct
+type Encrypt struct{}
+
+// NewEncrypt return new encrypt instance
+func NewEncrypt() *Encrypt {
+	return &Encrypt{}
 }
 
-type encrypt struct {
-
-}
-
-// json encode
-func (s *encrypt) JsonEncode(data map[string]interface{}) ([]byte, error) {
+// JSONEncode json encode
+func (s *Encrypt) JSONEncode(data map[string]interface{}) ([]byte, error) {
 	return json.Marshal(data)
 }
 
-// json decode
-func (s *encrypt) JsonDecode(data []byte) (map[string]interface{}, error) {
+// JSONDecode json decode
+func (s *Encrypt) JSONDecode(data []byte) (map[string]interface{}, error) {
 	tempValue := make(map[string]interface{})
 	err := json.Unmarshal(data, &tempValue)
 	if err != nil {
@@ -39,8 +40,8 @@ func (s *encrypt) JsonDecode(data []byte) (map[string]interface{}, error) {
 	return tempValue, nil
 }
 
-// gob encode
-func (s *encrypt) GobEncode(data map[string]interface{}) ([]byte, error) {
+// GOBEncode gob encode
+func (s *Encrypt) GOBEncode(data map[string]interface{}) ([]byte, error) {
 	if len(data) == 0 {
 		return []byte(""), nil
 	}
@@ -56,8 +57,8 @@ func (s *encrypt) GobEncode(data map[string]interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// gob decode data to map
-func (s *encrypt) GobDecode(data []byte) (map[string]interface{}, error) {
+// GOBDecode gob decode data to map
+func (s *Encrypt) GOBDecode(data []byte) (map[string]interface{}, error) {
 
 	if len(data) == 0 {
 		return make(map[string]interface{}), nil
@@ -72,22 +73,22 @@ func (s *encrypt) GobDecode(data []byte) (map[string]interface{}, error) {
 	return out, nil
 }
 
-// base64 encode
-func (s *encrypt) Base64Encode(data map[string]interface{}) ([]byte, error) {
+// Base64Encode base64 encode
+func (s *Encrypt) Base64Encode(data map[string]interface{}) ([]byte, error) {
 	var coder = base64.NewEncoding(BASE64TABLE)
-	b, err := s.GobEncode(data)
+	b, err := s.GOBEncode(data)
 	if err != nil {
 		return []byte{}, err
 	}
 	return []byte(coder.EncodeToString(b)), nil
 }
 
-// base64 decode
-func (s *encrypt) Base64Decode(data []byte) (map[string]interface{}, error) {
+// Base64Decode base64 decode
+func (s *Encrypt) Base64Decode(data []byte) (map[string]interface{}, error) {
 	var coder = base64.NewEncoding(BASE64TABLE)
 	b, err := coder.DecodeString(string(data))
 	if err != nil {
 		return nil, err
 	}
-	return s.GobDecode(b)
+	return s.GOBDecode(b)
 }

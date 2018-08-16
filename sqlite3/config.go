@@ -1,7 +1,6 @@
 package sqlite3
 
-// session sqlite3 config
-
+// Config session sqlite3 config
 type Config struct {
 
 	// sqlite3 db file path
@@ -23,6 +22,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// NewConfigWith instance new config with especific paremters
 func NewConfigWith(dbPath, tableName string) (cf *Config) {
 	cf = &Config{
 		SetMaxOpenConn: 500,
@@ -33,6 +33,7 @@ func NewConfigWith(dbPath, tableName string) (cf *Config) {
 	return
 }
 
+// Name return provider name
 func (sc *Config) Name() string {
 	return ProviderName
 }

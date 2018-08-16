@@ -1,13 +1,13 @@
 package file
 
 import (
-	"os"
-	"strings"
-	"path/filepath"
 	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
-type file struct {}
+type file struct{}
 
 // create file
 func (f *file) createFile(filename string) error {
@@ -37,6 +37,9 @@ func (f *file) getContent(filename string) (data []byte, err error) {
 	defer fi.Close()
 
 	fd, err := ioutil.ReadAll(fi)
+	if err != nil {
+		return
+	}
 	return fd, nil
 }
 
@@ -64,7 +67,7 @@ func (f *file) walkDir(dirPth, suffix string) (files []string, err error) {
 			if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
 				files = append(files, filename)
 			}
-		}else {
+		} else {
 			files = append(files, filename)
 		}
 		return nil
@@ -73,7 +76,7 @@ func (f *file) walkDir(dirPth, suffix string) (files []string, err error) {
 }
 
 //  Gets all files count in the specified directory and all subdirectories, and can match the suffix filter.
-func (f *file) count(dirPth, suffix string) (total int, err error)  {
+func (f *file) count(dirPth, suffix string) (total int, err error) {
 
 	if suffix != "" {
 		suffix = strings.ToUpper(suffix)
@@ -87,10 +90,10 @@ func (f *file) count(dirPth, suffix string) (total int, err error)  {
 		}
 		if suffix != "" {
 			if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) {
-				total += 1
+				total++
 			}
-		}else {
-			total += 1
+		} else {
+			total++
 		}
 		return nil
 	})

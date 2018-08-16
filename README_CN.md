@@ -121,20 +121,20 @@ type Config struct {
 	// set whether to pass this bar cookie only through HTTPS
 	Secure bool
 	
-	// sessionId is in url query
-	SessionIdInURLQuery bool
+	// sessionID is in url query
+	SessionIDInURLQuery bool
 	
 	// sessionName in url query
-	SessionNameInUrlQuery string
+	SessionNameInURLQuery string
 	
-	// sessionId is in http header
-	SessionIdInHttpHeader bool
+	// sessionID is in http header
+	SessionIDInHTTPHeader bool
 	
 	// sessionName in http header
-	SessionNameInHttpHeader string
+	SessionNameInHTTPHeader string
 	
-	// SessionIdGeneratorFunc should returns a random session id.
-	SessionIdGeneratorFunc func() string
+	// SessionIDGeneratorFunc should returns a random session id.
+	SessionIDGeneratorFunc func() string
 	
 	// Encode the cookie value if not nil.
 	EncodeFunc func(cookieValue string) (string, error)

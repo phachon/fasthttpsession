@@ -5,8 +5,7 @@ import (
 	"net/url"
 )
 
-// session postgres config
-
+// Config session postgres config
 type Config struct {
 
 	// The host to connect to. Values that start with / are for unix domain sockets. (default is localhost)
@@ -44,6 +43,7 @@ type Config struct {
 	UnSerializeFunc func(data []byte) (map[string]interface{}, error)
 }
 
+// NewConfigWith instance new config with especific paremters
 func NewConfigWith(host string, port int64, username string, password string, dbName string, tableName string) (cf *Config) {
 	cf = NewDefaultConfig()
 	cf.Host = host
@@ -55,21 +55,22 @@ func NewConfigWith(host string, port int64, username string, password string, db
 	return
 }
 
+// NewDefaultConfig return default config instance
 func NewDefaultConfig() *Config {
 	return &Config{
-		Host: "127.0.0.1",
-		Port: 5432,
-		Username: "root",
-		Password: "",
-		ConnTimeout:  3000,
-		Database: "test",
-		TableName: "test",
+		Host:           "127.0.0.1",
+		Port:           5432,
+		Username:       "root",
+		Password:       "",
+		ConnTimeout:    3000,
+		Database:       "test",
+		TableName:      "test",
 		SetMaxOpenConn: 500,
 		SetMaxIdleConn: 50,
 	}
 }
 
-func (pc *Config)getPostgresDSN() string {
+func (pc *Config) getPostgresDSN() string {
 	return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?connect_timeout=%d&sslmode=disable",
 		url.QueryEscape(pc.Username),
 		pc.Password,
@@ -79,6 +80,7 @@ func (pc *Config)getPostgresDSN() string {
 		pc.ConnTimeout)
 }
 
+// Name return provider name
 func (pc *Config) Name() string {
 	return ProviderName
 }
