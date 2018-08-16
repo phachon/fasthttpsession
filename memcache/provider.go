@@ -82,9 +82,9 @@ func (mcp *Provider) ReadStore(sessionID string) (fasthttpsession.SessionStore, 
 	if err != nil {
 		if err == memcache.ErrCacheMiss {
 			return NewMemCacheStore(sessionID), nil
-		} else {
-			return nil, err
 		}
+
+		return nil, err
 	}
 	if len(item.Value) == 0 {
 		return NewMemCacheStore(sessionID), nil

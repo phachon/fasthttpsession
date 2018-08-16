@@ -21,6 +21,7 @@ func NewRedisStoreData(sessionID string, data map[string]interface{}) *Store {
 	return redisStore
 }
 
+// Store store struct
 type Store struct {
 	fasthttpsession.Store
 }
