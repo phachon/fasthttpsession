@@ -5,8 +5,7 @@ import (
 	"net/url"
 )
 
-// session postgres config
-
+// Config session postgres config
 type Config struct {
 
 	// The host to connect to. Values that start with / are for unix domain sockets. (default is localhost)

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 )
 
 // session file provider

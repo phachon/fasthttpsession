@@ -10,7 +10,7 @@ import (
 
 var version = "v0.0.1"
 
-// Session struct
+// Session session struct
 type Session struct {
 	provider Provider
 	config   *Config
@@ -19,7 +19,7 @@ type Session struct {
 
 var providers = make(map[string]Provider)
 
-// register session provider
+// Register register session provider
 func Register(providerName string, provider Provider) {
 	if providers[providerName] != nil {
 		panic("session register error, provider " + providerName + " already registered!")
@@ -31,7 +31,7 @@ func Register(providerName string, provider Provider) {
 	providers[providerName] = provider
 }
 
-// return new Session
+// NewSession return new Session
 func NewSession(cfg *Config) *Session {
 
 	if cfg.CookieName == "" {
@@ -55,7 +55,7 @@ func NewSession(cfg *Config) *Session {
 	return session
 }
 
-// set session provider and provider config
+// SetProvider set session provider and provider config
 func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig) error {
 	provider, ok := providers[providerName]
 	if !ok {
@@ -73,7 +73,7 @@ func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig
 			defer func() {
 				e := recover()
 				if e != nil {
-					panic(errors.New(fmt.Sprintf("session gc crash, %v", e)))
+					panic(fmt.Errorf("session gc crash, %v", e))
 				}
 			}()
 			s.gc()
@@ -92,7 +92,7 @@ func (s *Session) gc() {
 	}
 }
 
-// session start
+// Start session start
 // 1. get sessionId from fasthttp ctx
 // 2. if sessionId is empty, generator sessionId and set response Set-Cookie
 // 3. return session provider store
@@ -135,7 +135,7 @@ func (s *Session) Start(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, er
 	return
 }
 
-// get session id
+// GetSessionId get session id
 // 1. get session id by reading from cookie
 // 2. get session id from query
 // 3. get session id from http headers
@@ -163,7 +163,7 @@ func (s *Session) GetSessionId(ctx *fasthttp.RequestCtx) string {
 	return ""
 }
 
-// regenerate a session id for this SessionStore
+// Regenerate regenerate a session id for this SessionStore
 func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStore, err error) {
 
 	if s.provider == nil {
@@ -206,7 +206,7 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 	return
 }
 
-// destroy session in fasthttp ctx
+// Destroy destroy session in fasthttp ctx
 func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 
 	// delete header if sessionId in http Header
@@ -227,6 +227,7 @@ func (s *Session) Destroy(ctx *fasthttp.RequestCtx) {
 	s.cookie.Delete(ctx, s.config.CookieName)
 }
 
+// Version return fasthttpsession version
 func Version() string {
 	return version
 }

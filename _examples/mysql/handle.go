@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 	"github.com/valyala/fasthttp"
 )
 

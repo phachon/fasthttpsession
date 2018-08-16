@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 )
 
 // session memory provider

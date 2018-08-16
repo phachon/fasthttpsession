@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/bradfitz/gomemcache/memcache"
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 )
 
 // session MemCache provider

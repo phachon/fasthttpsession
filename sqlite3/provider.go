@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 )
 
 // session sqlite3 provider
@@ -36,7 +36,7 @@ type Provider struct {
 	maxLifeTime int64
 }
 
-// new sqlite3 provider
+// NewProvider new sqlite3 provider
 func NewProvider() *Provider {
 	return &Provider{
 		config:     &Config{},
@@ -45,7 +45,7 @@ func NewProvider() *Provider {
 	}
 }
 
-// init provider config
+// Init init provider config
 func (sp *Provider) Init(lifeTime int64, sqlite3Config fasthttpsession.ProviderConfig) error {
 	if sqlite3Config.Name() != ProviderName {
 		return errors.New("session sqlite3 provider init error, config must sqlite3 config")
@@ -78,17 +78,17 @@ func (sp *Provider) Init(lifeTime int64, sqlite3Config fasthttpsession.ProviderC
 	return sessionDao.sqlite3Conn.Ping()
 }
 
-// not need gc
+// NeedGC not need gc
 func (sp *Provider) NeedGC() bool {
 	return true
 }
 
-// session sqlite3 provider not need garbage collection
+// GC session sqlite3 provider not need garbage collection
 func (sp *Provider) GC() {
 	sp.sessionDao.deleteSessionByMaxLifeTime(sp.maxLifeTime)
 }
 
-// read session store by session id
+// ReadStore read session store by session id
 func (sp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
 
 	sessionValue, err := sp.sessionDao.getSessionBySessionId(sessionId)
@@ -114,7 +114,7 @@ func (sp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 	return NewSqLite3StoreData(sessionId, data), nil
 }
 
-// regenerate session
+// Regenerate regenerate session
 func (sp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
 
 	sessionValue, err := sp.sessionDao.getSessionBySessionId(oldSessionId)
@@ -144,13 +144,13 @@ func (sp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	return sp.ReadStore(sessionId)
 }
 
-// destroy session by sessionId
+// Destroy destroy session by sessionId
 func (sp *Provider) Destroy(sessionId string) error {
 	_, err := sp.sessionDao.deleteBySessionId(sessionId)
 	return err
 }
 
-// session values count
+// Count session values count
 func (sp *Provider) Count() int {
 	return sp.sessionDao.countSessions()
 }

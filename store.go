@@ -4,8 +4,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// session store struct
-
+// SessionStore session store struct
 type SessionStore interface {
 	Save(*fasthttp.RequestCtx) error
 	Get(key string) interface{}
@@ -21,39 +20,39 @@ type Store struct {
 	data      *CCMap
 }
 
-// init store data and sessionId
+// Init init store data and sessionId
 func (s *Store) Init(sessionId string, data map[string]interface{}) {
 	s.sessionId = sessionId
 	s.data = NewDefaultCCMap()
 	s.data.MSet(data)
 }
 
-// get data by key
+// Get get data by key
 func (s *Store) Get(key string) interface{} {
 	return s.data.Get(key)
 }
 
-// get all data
+// GetAll get all data
 func (s *Store) GetAll() map[string]interface{} {
 	return s.data.GetAll()
 }
 
-// set data
+// Set set data
 func (s *Store) Set(key string, value interface{}) {
 	s.data.Set(key, value)
 }
 
-// delete data by key
+// Delete delete data by key
 func (s *Store) Delete(key string) {
 	s.data.Delete(key)
 }
 
-// flush all data
+// Flush flush all data
 func (s *Store) Flush() {
 	s.data.Clear()
 }
 
-// get session id
+// GetSessionId get session id
 func (s *Store) GetSessionId() string {
 	return s.sessionId
 }

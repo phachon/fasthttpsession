@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 )
 
 // session postgres provider
@@ -36,7 +36,7 @@ type Provider struct {
 	maxLifeTime int64
 }
 
-// new postgres provider
+// NewProvider new postgres provider
 func NewProvider() *Provider {
 	return &Provider{
 		config:     &Config{},
@@ -45,7 +45,7 @@ func NewProvider() *Provider {
 	}
 }
 
-// init provider config
+// Init init provider config
 func (pp *Provider) Init(lifeTime int64, postgresConfig fasthttpsession.ProviderConfig) error {
 	if postgresConfig.Name() != ProviderName {
 		return errors.New("session postgres provider init error, config must postgres config")

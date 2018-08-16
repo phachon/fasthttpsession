@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 )
 
 // session redis provider
@@ -24,7 +24,7 @@ type Provider struct {
 	maxLifeTime int64
 }
 
-// new redis provider
+// NewProvider new redis provider
 func NewProvider() *Provider {
 	return &Provider{
 		config:    &Config{},
@@ -33,7 +33,7 @@ func NewProvider() *Provider {
 	}
 }
 
-// init provider config
+// Init init provider config
 func (rp *Provider) Init(lifeTime int64, redisConfig fasthttpsession.ProviderConfig) error {
 	if redisConfig.Name() != ProviderName {
 		return errors.New("session redis provider init error, config must redis config")
@@ -76,15 +76,15 @@ func (rp *Provider) Init(lifeTime int64, redisConfig fasthttpsession.ProviderCon
 	return nil
 }
 
-// not need gc
+// NeedGC not need gc
 func (rp *Provider) NeedGC() bool {
 	return false
 }
 
-// session redis provider not need garbage collection
+// GC session redis provider not need garbage collection
 func (rp *Provider) GC() {}
 
-// read session store by session id
+// ReadStore read session store by session id
 func (rp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
 
 	conn := rp.redisPool.Get()
@@ -107,7 +107,7 @@ func (rp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, e
 	return NewRedisStoreData(sessionId, data), nil
 }
 
-// regenerate session
+// Regenerate regenerate session
 func (rp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttpsession.SessionStore, error) {
 
 	conn := rp.redisPool.Get()
@@ -126,7 +126,7 @@ func (rp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttps
 	return rp.ReadStore(sessionId)
 }
 
-// destroy session by sessionId
+// Destroy destroy session by sessionId
 func (rp *Provider) Destroy(sessionId string) error {
 	conn := rp.redisPool.Get()
 	defer conn.Close()
@@ -139,7 +139,7 @@ func (rp *Provider) Destroy(sessionId string) error {
 	return nil
 }
 
-// session values count
+// Count session values count
 func (rp *Provider) Count() int {
 	conn := rp.redisPool.Get()
 	defer conn.Close()

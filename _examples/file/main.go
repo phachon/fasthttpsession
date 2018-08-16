@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/phachon/fasthttpsession"
-	"github.com/phachon/fasthttpsession/file"
+	"github.com/savsgio/fasthttpsession"
+	"github.com/savsgio/fasthttpsession/file"
 	"github.com/valyala/fasthttp"
 )
 

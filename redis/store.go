@@ -1,20 +1,20 @@
 package redis
 
 import (
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 	"github.com/valyala/fasthttp"
 )
 
 // session redis store
 
-// new default redis store
+// NewRedisStore new default redis store
 func NewRedisStore(sessionId string) *Store {
 	redisStore := &Store{}
 	redisStore.Init(sessionId, make(map[string]interface{}))
 	return redisStore
 }
 
-// new redis store data
+// NewRedisStoreData new redis store data
 func NewRedisStoreData(sessionId string, data map[string]interface{}) *Store {
 	redisStore := &Store{}
 	redisStore.Init(sessionId, data)
@@ -25,7 +25,7 @@ type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (rs *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	b, err := provider.config.SerializeFunc(rs.GetAll())

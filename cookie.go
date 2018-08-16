@@ -12,7 +12,7 @@ func NewCookie() *Cookie {
 
 type Cookie struct{}
 
-// get cookie by name
+// Get get cookie by name
 func (c *Cookie) Get(ctx *fasthttp.RequestCtx, name string) (value string) {
 	cookieByte := ctx.Request.Header.Cookie(name)
 	if len(cookieByte) > 0 {
@@ -21,7 +21,7 @@ func (c *Cookie) Get(ctx *fasthttp.RequestCtx, name string) (value string) {
 	return
 }
 
-// response set cookie
+// Set response set cookie
 func (c *Cookie) Set(ctx *fasthttp.RequestCtx, name string, value string, domain string, expires time.Duration, secure bool) {
 
 	cookie := fasthttp.AcquireCookie()
@@ -48,7 +48,7 @@ func (c *Cookie) Set(ctx *fasthttp.RequestCtx, name string, value string, domain
 	ctx.Response.Header.SetCookie(cookie)
 }
 
-// delete cookie by cookie name
+// Delete delete cookie by cookie name
 func (c *Cookie) Delete(ctx *fasthttp.RequestCtx, name string) {
 
 	// delete response cookie

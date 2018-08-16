@@ -1,7 +1,6 @@
 package redis
 
-// session redis config
-
+// Config session redis config
 type Config struct {
 
 	// Redis server host

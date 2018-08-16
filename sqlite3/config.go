@@ -1,7 +1,6 @@
 package sqlite3
 
-// session sqlite3 config
-
+// Config session sqlite3 config
 type Config struct {
 
 	// sqlite3 db file path

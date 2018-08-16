@@ -3,7 +3,7 @@ package postgres
 import (
 	"time"
 
-	"github.com/phachon/fasthttpsession"
+	"github.com/savsgio/fasthttpsession"
 	"github.com/valyala/fasthttp"
 )
 
@@ -16,7 +16,7 @@ func NewPostgresStore(sessionId string) *Store {
 	return postgresStore
 }
 
-// new postgres store data
+// NewPostgresStoreData new postgres store data
 func NewPostgresStoreData(sessionId string, data map[string]interface{}) *Store {
 	postgresStore := &Store{}
 	postgresStore.Init(sessionId, data)
@@ -27,7 +27,7 @@ type Store struct {
 	fasthttpsession.Store
 }
 
-// save store
+// Save save store
 func (ps *Store) Save(ctx *fasthttp.RequestCtx) error {
 
 	b, err := provider.config.SerializeFunc(ps.GetAll())

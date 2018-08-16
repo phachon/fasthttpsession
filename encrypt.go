@@ -20,15 +20,14 @@ func NewEncrypt() *encrypt {
 	return &encrypt{}
 }
 
-type encrypt struct {
-}
+type encrypt struct{}
 
-// json encode
+// JsonEncode json encode
 func (s *encrypt) JsonEncode(data map[string]interface{}) ([]byte, error) {
 	return json.Marshal(data)
 }
 
-// json decode
+// JsonDecode json decode
 func (s *encrypt) JsonDecode(data []byte) (map[string]interface{}, error) {
 	tempValue := make(map[string]interface{})
 	err := json.Unmarshal(data, &tempValue)
@@ -38,7 +37,7 @@ func (s *encrypt) JsonDecode(data []byte) (map[string]interface{}, error) {
 	return tempValue, nil
 }
 
-// gob encode
+// GobEncode gob encode
 func (s *encrypt) GobEncode(data map[string]interface{}) ([]byte, error) {
 	if len(data) == 0 {
 		return []byte(""), nil
@@ -55,7 +54,7 @@ func (s *encrypt) GobEncode(data map[string]interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// gob decode data to map
+// GobDecode gob decode data to map
 func (s *encrypt) GobDecode(data []byte) (map[string]interface{}, error) {
 
 	if len(data) == 0 {
@@ -71,7 +70,7 @@ func (s *encrypt) GobDecode(data []byte) (map[string]interface{}, error) {
 	return out, nil
 }
 
-// base64 encode
+// Base64Encode base64 encode
 func (s *encrypt) Base64Encode(data map[string]interface{}) ([]byte, error) {
 	var coder = base64.NewEncoding(BASE64TABLE)
 	b, err := s.GobEncode(data)
@@ -81,7 +80,7 @@ func (s *encrypt) Base64Encode(data map[string]interface{}) ([]byte, error) {
 	return []byte(coder.EncodeToString(b)), nil
 }
 
-// base64 decode
+// Base64Decode base64 decode
 func (s *encrypt) Base64Decode(data []byte) (map[string]interface{}, error) {
 	var coder = base64.NewEncoding(BASE64TABLE)
 	b, err := coder.DecodeString(string(data))

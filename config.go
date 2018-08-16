@@ -14,7 +14,7 @@ var (
 	defaultGCLifetime = int64(3)
 )
 
-// new default config
+// NewDefaultConfig new default config
 func NewDefaultConfig() *Config {
 	config := &Config{
 		CookieName:              defaultCookieName,
@@ -81,7 +81,7 @@ type Config struct {
 	DecodeFunc func(cookieValue string) (string, error)
 }
 
-// sessionId generator
+// SessionIdGenerator sessionId generator
 func (c *Config) SessionIdGenerator() string {
 	sessionIdGenerator := c.SessionIdGeneratorFunc
 	if sessionIdGenerator == nil {
@@ -96,7 +96,7 @@ func (c *Config) defaultSessionIdGenerator() string {
 	return uuid.NewV4().String()
 }
 
-// encode cookie value
+// Encode encode cookie value
 func (c *Config) Encode(cookieValue string) string {
 	encode := c.EncodeFunc
 	if encode != nil {
@@ -110,7 +110,7 @@ func (c *Config) Encode(cookieValue string) string {
 	return cookieValue
 }
 
-// decode cookie value
+// Decode decode cookie value
 func (c *Config) Decode(cookieValue string) string {
 	if cookieValue == "" {
 		return ""
