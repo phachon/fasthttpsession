@@ -24,7 +24,7 @@
 
 [[constraint]]
   name = "github.com/valyala/fasthttp"
-  version = "master"
+  branch = "master"
 
 [prune]
   go-tests = true
