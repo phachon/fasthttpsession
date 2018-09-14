@@ -1,5 +1,6 @@
 [![logo](./logo.png)](https://github.com/phachon/fasthttpsession)
 
+[![Sourcegraph](https://sourcegraph.com/github.com/phachon/fasthttpsession/-/badge.svg)](https://sourcegraph.com/github.com/phachon/fasthttpsession?badge)
 [![build](https://img.shields.io/shippable/5444c5ecb904a4b21567b0ff.svg)](https://travis-ci.org/phachon/fasthttpsession)
 [![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/phachon/fasthttpsession)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/phachon/fasthttpsession/master/LICENSE)

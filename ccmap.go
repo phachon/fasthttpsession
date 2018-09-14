@@ -56,7 +56,7 @@ func (c *CCMap) GetSliceMap(key string) *MapSlice {
 }
 
 // key is exist
-func (c CCMap) IsExist(key string) bool {
+func (c *CCMap) IsExist(key string) bool {
 	sliceMap := c.GetSliceMap(key)
 
 	sliceMap.lock.RLock()
