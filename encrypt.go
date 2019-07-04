@@ -1,10 +1,10 @@
 package fasthttpsession
 
 import (
-	"encoding/json"
-	"encoding/gob"
 	"bytes"
 	"encoding/base64"
+	"encoding/gob"
+	"encoding/json"
 )
 
 // fasthttpsession encrypt tool
@@ -21,7 +21,6 @@ func NewEncrypt() *encrypt {
 }
 
 type encrypt struct {
-
 }
 
 // json encode

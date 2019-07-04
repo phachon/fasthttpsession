@@ -12,12 +12,12 @@ var (
 // Concurrent Map
 type CCMap struct {
 	sliceNumber int
-	values []*MapSlice
+	values      []*MapSlice
 }
 
 // Map slice
 type MapSlice struct {
-	lock sync.RWMutex
+	lock  sync.RWMutex
 	items map[string]interface{}
 }
 
@@ -30,9 +30,9 @@ func NewDefaultCCMap() *CCMap {
 func NewCCMap(sliceNumber int) *CCMap {
 	ccMap := &CCMap{
 		sliceNumber: sliceNumber,
-		values: make([]*MapSlice, sliceNumber),
+		values:      make([]*MapSlice, sliceNumber),
 	}
-	for i:=0; i < sliceNumber; i++ {
+	for i := 0; i < sliceNumber; i++ {
 		ccMap.values[i] = &MapSlice{
 			items: make(map[string]interface{}),
 		}
@@ -52,7 +52,7 @@ func fnvHash(key string) uint32 {
 
 // get slice key
 func (c *CCMap) GetSliceMap(key string) *MapSlice {
-	return c.values[uint(fnvHash(key)) % uint(c.sliceNumber)]
+	return c.values[uint(fnvHash(key))%uint(c.sliceNumber)]
 }
 
 // key is exist
@@ -65,7 +65,6 @@ func (c *CCMap) IsExist(key string) bool {
 
 	return ok
 }
-
 
 // set key value
 func (c *CCMap) Set(key string, value interface{}) {
@@ -130,7 +129,7 @@ func (c *CCMap) Replace(key string, value interface{}) {
 }
 
 // multiple set
-func (c *CCMap) MSet(data map[string]interface{})  {
+func (c *CCMap) MSet(data map[string]interface{}) {
 	for key, value := range data {
 		c.Set(key, value)
 	}
@@ -157,7 +156,7 @@ func (c *CCMap) GetOnce(key string) interface{} {
 func (c *CCMap) GetAll() map[string]interface{} {
 	data := make(map[string]interface{})
 
-	for i:=0; i < c.sliceNumber; i++ {
+	for i := 0; i < c.sliceNumber; i++ {
 		sliceMap := c.values[i]
 		sliceMap.lock.RLock()
 		for key, value := range sliceMap.items {
@@ -170,7 +169,7 @@ func (c *CCMap) GetAll() map[string]interface{} {
 
 // clear all values
 func (c *CCMap) Clear() {
-	for i:=0; i < c.sliceNumber; i++ {
+	for i := 0; i < c.sliceNumber; i++ {
 		sliceMap := c.values[i]
 		sliceMap.lock.Lock()
 		c.values[i].items = make(map[string]interface{})

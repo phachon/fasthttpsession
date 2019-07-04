@@ -1,10 +1,10 @@
 package fasthttpsession
 
 import (
-	"github.com/valyala/fasthttp"
 	"errors"
-	"time"
 	"fmt"
+	"github.com/valyala/fasthttp"
+	"time"
 )
 
 var version = "v0.0.1"
@@ -12,19 +12,19 @@ var version = "v0.0.1"
 // Session struct
 type Session struct {
 	provider Provider
-	config  *Config
-	cookie  *Cookie
+	config   *Config
+	cookie   *Cookie
 }
 
 var providers = make(map[string]Provider)
 
 // register session provider
-func Register(providerName string, provider Provider)  {
+func Register(providerName string, provider Provider) {
 	if providers[providerName] != nil {
-		panic("session register error, provider "+ providerName +" already registered!")
+		panic("session register error, provider " + providerName + " already registered!")
 	}
 	if provider == nil {
-		panic("session register error, provider "+ providerName +" is nil!")
+		panic("session register error, provider " + providerName + " is nil!")
 	}
 
 	providers[providerName] = provider
@@ -58,7 +58,7 @@ func NewSession(cfg *Config) *Session {
 func (s *Session) SetProvider(providerName string, providerConfig ProviderConfig) error {
 	provider, ok := providers[providerName]
 	if !ok {
-		return errors.New("session set provider error, "+providerName+" not registered!")
+		return errors.New("session set provider error, " + providerName + " not registered!")
 	}
 	err := provider.Init(s.config.SessionLifetime, providerConfig)
 	if err != nil {
@@ -181,7 +181,7 @@ func (s *Session) Regenerate(ctx *fasthttp.RequestCtx) (sessionStore SessionStor
 	// regenerate provider session store
 	if oldSessionId != "" {
 		sessionStore, err = s.provider.Regenerate(oldSessionId, sessionId)
-	}else {
+	} else {
 		sessionStore, err = s.provider.ReadStore(sessionId)
 	}
 	if err != nil {

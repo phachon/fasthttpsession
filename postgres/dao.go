@@ -1,11 +1,11 @@
 package postgres
 
 import (
-	_ "github.com/lib/pq"
 	"database/sql"
+	"fmt"
+	_ "github.com/lib/pq"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 func newSessionDao(dsn string, tableName string) (*sessionDao, error) {
@@ -15,13 +15,13 @@ func newSessionDao(dsn string, tableName string) (*sessionDao, error) {
 	}
 	return &sessionDao{
 		postgresConn: conn,
-		tableName: tableName,
+		tableName:    tableName,
 	}, nil
 }
 
 type sessionDao struct {
 	postgresConn *sql.DB
-	tableName string
+	tableName    string
 }
 
 // get session by sessionId

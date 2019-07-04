@@ -1,10 +1,10 @@
 package memcache
 
 import (
-	"github.com/phachon/fasthttpsession"
 	"errors"
-	"reflect"
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/phachon/fasthttpsession"
+	"reflect"
 )
 
 // session MemCache provider
@@ -13,21 +13,21 @@ const ProviderName = "memcache"
 
 var (
 	provider = NewProvider()
-	encrypt = fasthttpsession.NewEncrypt()
+	encrypt  = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
-	config *Config
-	values *fasthttpsession.CCMap
+	config         *Config
+	values         *fasthttpsession.CCMap
 	memCacheClient *memcache.Client
-	maxLifeTime int64
+	maxLifeTime    int64
 }
 
 // new memcache provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{},
-		values: fasthttpsession.NewDefaultCCMap(),
+		config:         &Config{},
+		values:         fasthttpsession.NewDefaultCCMap(),
 		memCacheClient: &memcache.Client{},
 	}
 }
@@ -70,7 +70,6 @@ func (mcp *Provider) NeedGC() bool {
 // session memcache provider not need garbage collection
 func (mcp *Provider) GC() {}
 
-
 // read session store by session id
 func (mcp *Provider) ReadStore(sessionId string) (fasthttpsession.SessionStore, error) {
 
@@ -105,8 +104,8 @@ func (mcp *Provider) Regenerate(oldSessionId string, sessionId string) (fasthttp
 	if err != nil || len(item.Value) == 0 {
 		// false, old sessionId not exists
 		err := memClient.Set(&memcache.Item{
-			Key: mcp.getMemCacheSessionKey(sessionId),
-			Value: []byte(""),
+			Key:        mcp.getMemCacheSessionKey(sessionId),
+			Value:      []byte(""),
 			Expiration: int32(mcp.maxLifeTime),
 		})
 		if err != nil {
@@ -142,7 +141,7 @@ func (mcp *Provider) Count() int {
 
 // get memcache session key, prefix:sessionId
 func (mcp *Provider) getMemCacheSessionKey(sessionId string) string {
-	return mcp.config.KeyPrefix+":"+sessionId
+	return mcp.config.KeyPrefix + ":" + sessionId
 }
 
 func (mcp *Provider) getMemCacheClient() *memcache.Client {
@@ -153,6 +152,6 @@ func (mcp *Provider) getMemCacheClient() *memcache.Client {
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, provider)
 }

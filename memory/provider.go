@@ -1,10 +1,10 @@
 package memory
 
 import (
-	"github.com/phachon/fasthttpsession"
-	"time"
 	"errors"
+	"github.com/phachon/fasthttpsession"
 	"reflect"
+	"time"
 )
 
 // session memory provider
@@ -12,16 +12,16 @@ import (
 const ProviderName = "memory"
 
 type Provider struct {
-	config *Config
-	values *fasthttpsession.CCMap
+	config      *Config
+	values      *fasthttpsession.CCMap
 	maxLifeTime int64
 }
 
 // new memory provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{},
-		values: fasthttpsession.NewDefaultCCMap(),
+		config:      &Config{},
+		values:      fasthttpsession.NewDefaultCCMap(),
 		maxLifeTime: 0,
 	}
 }
@@ -47,7 +47,7 @@ func (mp *Provider) NeedGC() bool {
 // session garbage collection
 func (mp *Provider) GC() {
 	for sessionId, value := range mp.values.GetAll() {
-		if time.Now().Unix() >= value.(*Store).lastActiveTime + mp.maxLifeTime {
+		if time.Now().Unix() >= value.(*Store).lastActiveTime+mp.maxLifeTime {
 			// destroy session sessionId
 			mp.Destroy(sessionId)
 			return
@@ -99,6 +99,6 @@ func (mp *Provider) Count() int {
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, NewProvider())
 }

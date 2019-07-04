@@ -1,8 +1,8 @@
 package mysql
 
 import (
-	"github.com/phachon/fasthttpsession"
 	"errors"
+	"github.com/phachon/fasthttpsession"
 	"reflect"
 	"time"
 )
@@ -25,21 +25,21 @@ const ProviderName = "mysql"
 
 var (
 	provider = NewProvider()
-	encrypt = fasthttpsession.NewEncrypt()
+	encrypt  = fasthttpsession.NewEncrypt()
 )
 
 type Provider struct {
-	config *Config
-	values *fasthttpsession.CCMap
-	sessionDao *sessionDao
+	config      *Config
+	values      *fasthttpsession.CCMap
+	sessionDao  *sessionDao
 	maxLifeTime int64
 }
 
 // new mysql provider
 func NewProvider() *Provider {
 	return &Provider{
-		config: &Config{},
-		values: fasthttpsession.NewDefaultCCMap(),
+		config:     &Config{},
+		values:     fasthttpsession.NewDefaultCCMap(),
 		sessionDao: &sessionDao{},
 	}
 }
@@ -158,6 +158,6 @@ func (mp *Provider) Count() int {
 }
 
 // register session provider
-func init()  {
+func init() {
 	fasthttpsession.Register(ProviderName, provider)
 }
