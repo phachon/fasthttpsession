@@ -92,7 +92,7 @@ func (c *Config) SessionIdGenerator() string {
 
 // default sessionId generator => uuid
 func (c *Config) defaultSessionIdGenerator() string {
-	id := uuid.NewV4()
+	id, _ := uuid.NewV4()
 	return id.String()
 }
 
